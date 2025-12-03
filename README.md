@@ -1,5 +1,5 @@
 # README
 
-# 🔷 [Читати українською мовою](./README_LOCALIZATIONS/README_UA.md)
-# 🔷 [Lire en français](./README_LOCALIZATIONS/README_FR.md)
-# 🔷 [Read in English](./README_LOCALIZATIONS/README_EN.md)
+# 🔸 [Читати українською мовою](./README_LOCALIZATIONS/README_UA.md)
+# 🔸 [Lire en français](./README_LOCALIZATIONS/README_FR.md)
+# 🔸 [Read in English](./README_LOCALIZATIONS/README_EN.md)
