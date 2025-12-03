@@ -25,15 +25,15 @@ Ce projet est un bot de trading multifonctionnel pour l'échange **Binance**, d�
 - 🔒 **Sécurité de Type pour les Opérations Financières:** Garantie de la précision des calculs grâce à l'utilisation du type `Decimal`.
     
 - 🛡️ **Gestion Complète des Erreurs:** Système à trois niveaux avec **retry automatique**, **Circuit Breaker** et surveillance de la qualité.
-    
+
 
 ## 📄 Guide du Développeur
 
 Ce projet adhère à des normes de développement strictes pour garantir la fiabilité et la précision des opérations financières.
-- **[Règles de Développement (Sécurité de Type, Decimal, Tests)]**
+
+- **[Règles de Développement (Sécurité de Type, Decimal, Tests)](/docs/DEVELOPMENT_GUIDELINES.md)**
+
 ## 🗂️ Structure du Projet
-
-
 
 ```yaml
 BinanceBot/
@@ -116,12 +116,10 @@ Modifiez `config/config.json` et `config/strategy.json` pour configurer les para
 
 - Pour Mainnet :
     
-
 `bash ./start_bot.sh`
 
 - Pour Testnet :
     
-
 `bash ./start_bot.sh --testnet`
 
 ---
@@ -132,15 +130,14 @@ Le bot met en œuvre un système complet de gestion des erreurs à **trois nivea
 
 ### 1. Architecture
 
-- Niveau Client API (src/binance_api_client.py):
+- **Niveau Client API (`src/binance_api_client.py`):**
     Intercepte toute exception de l'API et la transmet au niveau suivant.
-- Niveau Gestionnaire (src/error_handler.py):
+
+- **Niveau Gestionnaire (`src/error_handler.py`):**
+    Analyse l'exception, la classe par catégorie (RATE_LIMIT, TRADE_LOGIC_ERROR, etc.) et retourne un objet `ErrorDetails` standardisé.
     
-    Analyse l'exception, la classe par catégorie (RATE_LIMIT, TRADE_LOGIC_ERROR, etc.) et retourne un objet ErrorDetails standardisé.
-    
-- Niveau Réponse (main_bot.py):
+- **Niveau Réponse (`main_bot.py`):**
     Prend la décision finale basée sur la catégorie d'erreur : effectuer une nouvelle tentative (retry), marquer l'actif comme illiquide, ou arrêter le bot de manière critique.
-    
 
 ### 2. Cycle de Vie d'une Erreur
 
@@ -171,8 +168,8 @@ sequenceDiagram
 - `FAILURE_THRESHOLD = 3` - nombre d'erreurs avant blocage
 - `COOLDOWN_PERIOD = 300` secondes (5 minutes) - durée du blocage
 - `WINDOW_SIZE = 300` secondes - fenêtre de temps de comptage des erreurs
-**Exemple:**
 
+**Exemple:**
 ```
 Symbole BTCUSDT → 3 erreurs LOT_SIZE en 5 minutes
 → Circuit Breaker DÉCLENCHÉ (TRIPPED)
@@ -249,11 +246,11 @@ Le système suit 4 métriques de qualité clés conformément à la Stratégie v
 
 ### 1. **Taux de Succès des Retries** (Objectif : >70%)
 
-**Formule:** $\frac{\text{(Retries réussis)}}{\text{(Total des retries)}} \times 100\%$
+**Formule:** `(Retries réussis) / (Total des retries) × 100%`
 
 **Indique:** Combien d'erreurs ont été résolues grâce au mécanisme de tentatives répétées.
-**Exemple:**
 
+**Exemple:**
 ```
 10 erreurs avec retry → 7 résolues avec succès = 70% ✅
 ```
@@ -267,11 +264,11 @@ Le système suit 4 métriques de qualité clés conformément à la Stratégie v
 
 ### 2. **Taux de Déclenchement du Circuit Breaker (Trip Rate)** (Objectif : <5%)
 
-**Formule:** $\frac{\text{(Nombre de CB trips)}}{\text{(Total des opérations de trading)}} \times 100\%$
+**Formule:** `(Nombre de CB trips) / (Total des opérations de trading) × 100%`
 
 **Indique:** La fréquence à laquelle le Circuit Breaker bloque les symboles en raison d'erreurs répétées.
-**Exemple:**
 
+**Exemple:**
 ```
 100 opérations de trading → 2 CB trips = 2% ✅
 ```
@@ -286,11 +283,11 @@ Le système suit 4 métriques de qualité clés conformément à la Stratégie v
 
 ### 3. **Taux de Classification de Secours (Fallback Classification Rate)** (Objectif : <20%)
 
-**Formule:** $\frac{\text{(Erreurs avec via\_fallback=True)}}{\text{(Total des erreurs)}} \times 100\%$
+**Formule:** `(Erreurs avec via_fallback=True) / (Total des erreurs) × 100%`
 
 **Indique:** Le pourcentage d'erreurs qui n'ont pas été trouvées dans `error_code_reference.json` et qui ont été classées via le mécanisme de secours (**fallback**).
-**Exemple:**
 
+**Exemple:**
 ```
 100 erreurs → 15 via fallback = 15% ✅
 ```
@@ -303,12 +300,12 @@ Le système suit 4 métriques de qualité clés conformément à la Stratégie v
 ---
 
 ### 4. **Arrêts Critiques (Critical Stops)** (Objectif : 0)
+
 **Formule:** Compte des événements `CriticalBotStopError`
 
 **Indique:** Le nombre d'arrêts critiques du bot dus à une erreur `AUTH_ERROR_CRITICAL`.
 
 **Exemple:**
-
 ```
 0 arrêts critiques par semaine = ✅ OBJECTIF ATTEINT
 ```
@@ -365,7 +362,7 @@ pytest tests/ -v --tb=short
 
 ### Structure des Tests
 
-```
+```bash
 tests/
 ├── test_circuit_breaker.py      # Circuit Breaker (17 tests)
 ├── test_error_handler.py        # ErrorHandler (27 tests)
@@ -379,16 +376,16 @@ tests/
 ```
 
 **Total:** 130+ tests, couverture >70%
-### Couverture du Code (Coverage)
-**Valeurs Cibles:**
 
-- `error_handler.py`: $\ge 80\%$
-- `retry.py`: $\ge 80\%$
-- `circuit_breaker.py`: $\ge 70\%$
-- `illiquid_manager.py`: $\ge 70\%$
+### Couverture du Code (Coverage)
+
+**Valeurs Cibles:**
+- `error_handler.py`: ≥80%
+- `retry.py`: ≥80%
+- `circuit_breaker.py`: ≥70%
+- `illiquid_manager.py`: ≥70%
 
 **Génération du Rapport HTML:**
-
 
 ```bash
 pytest --cov=src --cov-report=html
@@ -423,13 +420,10 @@ pytest --snapshot-update
 ## 📜 Journalisation (Logging)
 
 Le bot enregistre les événements dans trois fichiers distincts dans les dossiers `logs/mainnet/` ou `logs/testnet/` :
-
 - `activity.log` — informations générales et événements système.
-    
 - `trades.log` — événements exclusivement liés au trading.
 - `performance.log` — rapports quotidiens de performance.
     
-
 **Format des Logs:**
 
 ```
@@ -437,7 +431,6 @@ Le bot enregistre les événements dans trois fichiers distincts dans les dossie
 ```
 
 **Éléments:**
-
 - Timestamp (UTC)
 - Nom du Logger
 - Niveau de Log
@@ -452,68 +445,70 @@ Le bot enregistre les événements dans trois fichiers distincts dans les dossie
 
 ### Questions Générales sur les Erreurs
 
-Q: Que signifie via_fallback=True dans les logs ?
-R: Cela signifie que l'erreur a été identifiée par son message textuel plutôt que par son code unique. C'est un signal pour le développeur d'ajouter ce code d'erreur à config/error_code_reference.json pour un traitement plus précis à l'avenir.
+**Q: Que signifie `via_fallback=True` dans les logs ?**
+**R:** Cela signifie que l'erreur a été identifiée par son message textuel plutôt que par son code unique. C'est un signal pour le développeur d'ajouter ce code d'erreur à `config/error_code_reference.json` pour un traitement plus précis à l'avenir.
 
-Q: Que faire si une erreur UNKNOWN_CLIENT_ERROR apparaît dans les logs ?
-R: C'est une erreur inconnue du système provenant de Binance. Vous devez trouver ce code dans la documentation officielle de Binance, déterminer sa catégorie et l'ajouter à config/error_code_reference.json. Ensuite, exécutez le validateur tools/validate_error_map.py.
+**Q: Que faire si une erreur `UNKNOWN_CLIENT_ERROR` apparaît dans les logs ?**
+**R:** C'est une erreur inconnue du système provenant de Binance. Vous devez trouver ce code dans la documentation officielle de Binance, déterminer sa catégorie et l'ajouter à `config/error_code_reference.json`. Ensuite, exécutez le validateur `tools/validate_error_map.py`.
 
-Q: Comment ajouter un nouveau code d'erreur ?
-R:
+**Q: Comment ajouter un nouveau code d'erreur ?**
+**R:**
 1. Ouvrez `config/error_code_reference.json`.
 2. Trouvez la section appropriée (`spot_api` ou `convert_api`).
 3. Ajoutez une nouvelle entrée `"code_d_erreur": "nom_de_la_categorie"`.
 4. Exécutez le validateur :
+
 ```bash
 python tools/validate_error_map.py
 ```
 
 ### Questions sur les Métriques
 
-Q: Que signifie "Taux de Succès des Retries : 65%" ?
-R: Cela signifie que 65% des erreurs ont été résolues avec succès grâce au mécanisme de tentatives répétées. L'objectif est >70%. Si votre taux est inférieur, vérifiez la stabilité de la connexion et les paramètres de retry.
+**Q: Que signifie "Taux de Succès des Retries : 65%" ?**
+**R:** Cela signifie que 65% des erreurs ont été résolues avec succès grâce au mécanisme de tentatives répétées. L'objectif est >70%. Si votre taux est inférieur, vérifiez la stabilité de la connexion et les paramètres de retry.
 
-Q: Que signifie "Taux de Circuit Breaker Trip : 8%" ?
-R: Cela signifie que le Circuit Breaker s'est déclenché dans 8% des cas par rapport au nombre total d'opérations de trading. L'objectif est <5%. S'il est supérieur, vérifiez la qualité des signaux de trading et les paramètres des filtres.
+**Q: Que signifie "Taux de Circuit Breaker Trip : 8%" ?**
+**R:** Cela signifie que le Circuit Breaker s'est déclenché dans 8% des cas par rapport au nombre total d'opérations de trading. L'objectif est <5%. S'il est supérieur, vérifiez la qualité des signaux de trading et les paramètres des filtres.
 
-Q: Que signifie "Taux de Fallback : 25%" ?
-R: Cela signifie que 25% des erreurs n'ont pas été trouvées dans error_code_reference.json. L'objectif est <20%. Ajoutez de nouveaux codes d'erreur à la configuration.
+**Q: Que signifie "Taux de Fallback : 25%" ?**
+**R:** Cela signifie que 25% des erreurs n'ont pas été trouvées dans `error_code_reference.json`. L'objectif est <20%. Ajoutez de nouveaux codes d'erreur à la configuration.
 
-Q: Que signifie "Arrêts Critiques : 1" ?
-R: Cela signifie que le bot s'est arrêté 1 fois en raison d'une erreur critique (AUTH_ERROR_CRITICAL). L'objectif est = 0. Vérifiez IMMÉDIATEMENT la validité des clés API.
+**Q: Que signifie "Arrêts Critiques : 1" ?**
+**R:** Cela signifie que le bot s'est arrêté 1 fois en raison d'une erreur critique (`AUTH_ERROR_CRITICAL`). L'objectif est = 0. Vérifiez IMMÉDIATEMENT la validité des clés API.
+
 ### Questions Opérationnelles
 
-Q: À quelle fréquence faut-il vérifier les métriques ?
-R:
+**Q: À quelle fréquence faut-il vérifier les métriques ?**
+**R:**
 - **Hebdomadaire:** Lancez `python tools/calculate_metrics.py`
 - **En cas d'anomalies:** Vérifiez immédiatement si vous remarquez un comportement inhabituel
 - **Après des changements:** Toujours après une mise à jour de la configuration ou du code
 
-Q: Comment débloquer un symbole après un Circuit Breaker trip ?
-R:
+**Q: Comment débloquer un symbole après un Circuit Breaker trip ?**
+**R:**
 1. Vérifiez pourquoi le symbole a "trippé" (consultez les logs)
 2. Si le problème est résolu, attendez 5 minutes (le cooldown se réinitialise automatiquement)
 3. Si le symbole a été ajouté à la blacklist illiquide: `python tools/illiquid_position_manager.py --remove SYMBOL`
 
-Q: L'erreur RATE_LIMIT_ERROR n'est pas envoyée sur Telegram - est-ce un bug ?
-R: Non, cela est conforme à la Stratégie v10. RATE_LIMIT_ERROR est une erreur GLOBALE de l'API (non liée au symbole), par conséquent :
+**Q: L'erreur RATE_LIMIT_ERROR n'est pas envoyée sur Telegram - est-ce un bug ?**
+**R:** Non, cela est conforme à la Stratégie v10. RATE_LIMIT_ERROR est une erreur GLOBALE de l'API (non liée au symbole), par conséquent :
 - Elle n'est **PAS** enregistrée dans le Circuit Breaker
 - Elle n'est **PAS** envoyée sur Telegram (problème temporaire résolu par le retry)
 - Elle est uniquement enregistrée comme **WARNING**
 
-Q: Pourquoi le timestamp N'EST PAS assaini dans les logs ?
-R: Conformément à la Stratégie v10, le timestamp n'est pas une donnée sensible. Le masquer compliquerait le diagnostic de l'erreur -1021 (Timestamp out of the recvWindow), qui nécessite une heure précise pour le débogage.
+**Q: Pourquoi le timestamp N'EST PAS assaini dans les logs ?**
+**R:** Conformément à la Stratégie v10, le timestamp n'est pas une donnée sensible. Le masquer compliquerait le diagnostic de l'erreur -1021 (Timestamp out of the recvWindow), qui nécessite une heure précise pour le débogage.
 
 ### Questions Techniques
 
-Q: Pourquoi MAX_BACKOFF = 60 secondes et non plus ?
-R: Pour un bot de trading, un délai de plus d'une minute est critique :
+**Q: Pourquoi `MAX_BACKOFF = 60` secondes et non plus ?**
+**R:** Pour un bot de trading, un délai de plus d'une minute est critique :
 - Les prix changent rapidement
 - Les opportunités de trading sont perdues
 - 60 secondes est un équilibre entre la charge sur l'API et la réactivité
 
-Q: Comment fonctionne le système à deux composants du illiquid manager ?
-R:
+**Q: Comment fonctionne le système à deux composants du illiquid manager ?**
+**R:**
 - **API** (`src/illiquid_manager.py`): Interface programmatique pour le Circuit Breaker et la boucle principale
 - **CLI** (`tools/illiquid_position_manager.py`): Gestion manuelle par l'opérateur
 - Les deux utilisent le fichier partagé `data/testnet/illiquid_positions.json`
