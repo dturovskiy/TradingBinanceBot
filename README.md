@@ -5,3 +5,4 @@
 # 🔸 [Read in English](./README_LOCALIZATIONS/README_EN.md)
 #
 # 🔷 [PROJECT MAP](PROJECT_MAP_EN.md)
+# 🔷 [PROJECT MAP](TESTING_GUIDE_EN.md)
