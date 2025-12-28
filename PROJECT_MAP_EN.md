@@ -144,14 +144,6 @@ Tools for ensuring quality (Quality Assurance) and performance analysis.
 *   **`integration/` (directory)**: Scripts for checking interaction with specific external services (Telegram, Proxy, etc.).
 
 ---
-
-## 📂 6. Hidden and System Folders
-*   **`.venv` / `.venv-win`**: Python virtual environments.
-*   **`.kiro`**: Project specifications and tasks.
-*   **`.obsidian`**: Knowledge base/notes settings.
-*   **`.vscode`**: VS Code editor settings.
-*   **`.pytest_cache` / `.mypy_cache`**: Temporary caches to speed up tests and analysis.
-
----
 **Report Compiled:** 2025-12-27  
 **Documentation Version:** 2.1 (Scripts & Tools Deep-dive)
+
