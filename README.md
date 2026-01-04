@@ -20,4 +20,4 @@
 
 # 🟢 [CHANGELOG](CHANGELOG.md)
 # 🟢 [LOGGING](LOGGING.md)
-<img width="2816" height="1536" alt="Gemini_Generated_Image_ar0jnlar0jnlar0j (1)" src="https://github.com/user-attachments/assets/8de1efb5-7b80-415b-a247-85b3950fb283" />
+<img width="2816" height="1536" alt="Gemini_Generated_Image_ar0jnlar0jnlar0j (1)" src="https://github.com/user-attachments/assets/71f579db-b919-484d-89df-461ab5b53ac5" />
