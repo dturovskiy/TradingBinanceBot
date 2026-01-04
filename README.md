@@ -10,7 +10,7 @@
 > This repository contains only a **public subset** of the full Binance trading bot project.  
 > The main codebase with sensitive functionality resides in a **private repository**.  
 > This repository is meant for testing, learning, and demonstration purposes.
-
+![unnamed](https://github.com/user-attachments/assets/85a91bdd-7e06-41cb-8d47-f2ce730081a4)
 # 🔸 [Читати українською мовою](./README_LOCALIZATIONS/README_UA.md)
 # 🔸 [Lire en français](./README_LOCALIZATIONS/README_FR.md)
 # 🔸 [Read in English](./README_LOCALIZATIONS/README_EN.md)
@@ -20,5 +20,5 @@
 
 # 🟢 [CHANGELOG](CHANGELOG.md)
 # 🟢 [LOGGING](LOGGING.md)
-![unnamed](https://github.com/user-attachments/assets/85a91bdd-7e06-41cb-8d47-f2ce730081a4)
+
 
