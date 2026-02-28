@@ -2,30 +2,35 @@
 
 Public documentation repository for the private `BinaceBot` trading system.
 
-> This repo contains documentation only.
-> Runtime code, secrets, and live operations remain in the private repository.
+> Documentation-only repository.
+> Runtime code and sensitive operations remain in the private repository.
 
-## Readme by Language
+## Start Here
 
-- Ukrainian: [README_LOCALIZATIONS/README_UA.md](README_LOCALIZATIONS/README_UA.md)
-- English: [README_LOCALIZATIONS/README_EN.md](README_LOCALIZATIONS/README_EN.md)
-- French: [README_LOCALIZATIONS/README_FR.md](README_LOCALIZATIONS/README_FR.md)
+- Documentation index: [docs/index.md](docs/index.md)
+
+## Language Entrypoints
+
+- English: [docs/en/overview.md](docs/en/overview.md)
+- Ukrainian: [docs/ua/overview.md](docs/ua/overview.md)
+- French: [docs/fr/overview.md](docs/fr/overview.md)
 
 ## Technical Guides
 
 | Topic | EN | UA | FR |
 | --- | --- | --- | --- |
-| Architecture Map | [PROJECT_MAP_EN.md](PROJECT_MAP_EN.md) | [PROJECT_MAP_UA.md](PROJECT_MAP_UA.md) | [PROJECT_MAP_FR.md](PROJECT_MAP_FR.md) |
-| Testing Guide | [TESTING_GUIDE_EN.md](TESTING_GUIDE_EN.md) | [TESTING_GUIDE_UA.md](TESTING_GUIDE_UA.md) | [TESTING_GUIDE_FR.md](TESTING_GUIDE_FR.md) |
-| Logging Guide | [LOGGING.md](LOGGING.md) | [LOGGING_UA.md](LOGGING_UA.md) | [LOGGING_FR.md](LOGGING_FR.md) |
+| Architecture | [docs/en/architecture/project_map.md](docs/en/architecture/project_map.md) | [docs/ua/architecture/project_map.md](docs/ua/architecture/project_map.md) | [docs/fr/architecture/project_map.md](docs/fr/architecture/project_map.md) |
+| Testing | [docs/en/testing/testing_guide.md](docs/en/testing/testing_guide.md) | [docs/ua/testing/testing_guide.md](docs/ua/testing/testing_guide.md) | [docs/fr/testing/testing_guide.md](docs/fr/testing/testing_guide.md) |
+| Logging | [docs/en/operations/logging.md](docs/en/operations/logging.md) | [docs/ua/operations/logging.md](docs/ua/operations/logging.md) | [docs/fr/operations/logging.md](docs/fr/operations/logging.md) |
 
-## Versioning
+## Shared Documentation Rules
+
+- Scope: [docs/shared/docs_scope.md](docs/shared/docs_scope.md)
+- Sync policy: [docs/shared/docs_sync_policy.md](docs/shared/docs_sync_policy.md)
+- Style guide: [docs/shared/style_guide.md](docs/shared/style_guide.md)
+- Glossary: [docs/shared/glossary.md](docs/shared/glossary.md)
+
+## Changelog
 
 - Change history: [CHANGELOG.md](CHANGELOG.md)
-- Documentation sync date: **2026-02-28**
-- Target private project: `BinaceBot` (closed source)
-
-## Scope Boundaries
-
-- `TradingBinanceBot`: guides, architecture docs, ops/testing/logging references.
-- `BinaceBot` (private): executable source code, configs, runtime data, logs, reports.
+- Last sync date: **2026-02-28**

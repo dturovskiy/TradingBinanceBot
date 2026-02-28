@@ -8,44 +8,40 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Planned
 
-- Add cross-repo docs validation checklist automation.
-- Add API module reference pages split by domain.
+- Add CI workflow for docs parity and markdown link checks.
+- Add API domain pages (market data, execution, risk, telemetry).
 
-## [2026.02.28] - Full Documentation Sync with Current Runtime
+## [2026.02.28] - Documentation Architecture Restructure
 
 ### Added
 
-- Multilingual technical guides:
-  - `PROJECT_MAP_UA.md`, `PROJECT_MAP_FR.md`
-  - `TESTING_GUIDE_UA.md`, `TESTING_GUIDE_FR.md`
-  - `LOGGING_UA.md`, `LOGGING_FR.md`
+- New language-first tree under `docs/`:
+  - `docs/en/*`
+  - `docs/ua/*`
+  - `docs/fr/*`
+- New shared governance docs:
+  - `docs/shared/docs_scope.md`
+  - `docs/shared/docs_sync_policy.md`
+  - `docs/shared/style_guide.md`
+  - `docs/shared/glossary.md`
+- New docs maintenance scripts:
+  - `scripts/docs/validate_links.sh`
+  - `scripts/docs/check_language_parity.py`
+- New central navigation page: `docs/index.md`.
 
 ### Changed
 
-- Rebuilt language router in `README.md`.
-- Fully refreshed localized readmes:
-  - `README_LOCALIZATIONS/README_UA.md`
-  - `README_LOCALIZATIONS/README_EN.md`
-  - `README_LOCALIZATIONS/README_FR.md`
-- Reworked architecture map (`PROJECT_MAP_EN.md`) to match current runtime:
-  - `TradingExecutor`-driven iteration flow,
-  - risk manager policy layer,
-  - Telegram watchdog control plane,
-  - feature-flag rollout contract.
-- Reworked testing guide (`TESTING_GUIDE_EN.md`) to current script paths:
-  - `scripts/testing/run_tests.sh`
-  - `scripts/testing/run_tests_quick.sh`
-  - `config/.mypy.ini`.
-- Reworked logging guide (`LOGGING.md`) to real runtime layout:
-  - `logs/{mainnet|testnet}/<hostname>/...`
-  - `logs/watchdog.log`
-  - size-based rotation (`10MB`, `30` backups).
+- Root `README.md` now routes to the new `docs/` structure.
+- Technical documentation moved to language-scoped paths:
+  - architecture maps,
+  - testing guides,
+  - logging guides,
+  - localized overviews.
 
-### Fixed
+### Compatibility
 
-- Removed outdated references to root-level legacy test scripts.
-- Removed stale assumptions about daily+compressed rotation.
-- Removed stale module references from older architecture snapshots.
+- Kept root-level and `README_LOCALIZATIONS/*` files as lightweight redirect pages.
+- Existing external links remain functional while pointing to the new structure.
 
 ## [2025.12.26] - Stage 3 Documentation Baseline (Archived)
 
@@ -53,4 +49,4 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - This baseline captured Stage 3 refactoring context.
 - Later runtime changes made parts of that snapshot outdated.
-- The 2026-02-28 release supersedes Stage 3 docs for daily operations.
+- The 2026-02-28 releases supersede Stage 3 docs for daily operations.
