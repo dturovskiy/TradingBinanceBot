@@ -38,10 +38,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - logging guides,
   - localized overviews.
 
-### Compatibility
+### Removed
 
-- Kept root-level and `README_LOCALIZATIONS/*` files as lightweight redirect pages.
-- Existing external links remain functional while pointing to the new structure.
+- Legacy duplicate root files:
+  - `PROJECT_MAP_*.md`
+  - `TESTING_GUIDE_*.md`
+  - `LOGGING*.md`
+- Legacy `README_LOCALIZATIONS/` directory.
 
 ## [2025.12.26] - Stage 3 Documentation Baseline (Archived)
 

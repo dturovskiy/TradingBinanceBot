@@ -28,7 +28,6 @@ For each behavior change, review and update:
 1. Run `scripts/docs/check_language_parity.py`.
 2. Run `scripts/docs/validate_links.sh`.
 3. Confirm `docs/index.md` points to current files.
-4. Ensure root compatibility redirect files still resolve.
 
 ## Ownership
 
