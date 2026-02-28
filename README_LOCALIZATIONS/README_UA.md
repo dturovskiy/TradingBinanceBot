@@ -1,585 +1,121 @@
-# 🤖 Автоматизований Торговий Бот для Binance
+# Документація Binance Trading Bot (UA)
 
-Цей проєкт є багатофункціональним торговим ботом для біржі Binance, розробленим на Python. Бот має модульну архітектуру і призначений для автоматизації торгових стратегій, управління портфелем та моніторингу ринку. Він підтримує як реальну торгівлю (Mainnet), так і безпечне тестування на Binance Testnet.
+Публічна документація для приватного проєкту `BinaceBot`.
 
-## 🚀 Основні Можливості
+## 1. Призначення цього репозиторію
 
-- 📈 **Комплексне Управління Угодами:** Take Profit, Stop Loss та Hard Stop Loss.
-    
-- 📊 **Технічний Аналіз (TA):** Підтвердження сигналів через RSI та Moving Averages.
-    
-- ⚖️ **Ребалансування та Купівля:** Автоматична купівля активів на основі стратегії "RSI Oversold".
-    
-- 🔄 **Підтримка API:** Гнучке використання Spot API для класичної торгівлі та Convert API для угод без комісій.
-    
-- 🌐 **Підтримка Тестнету:** Повноцінна робота з тестовим середовищем Binance.
-    
-- 🔔 **Сповіщення в Telegram:** Миттєві повідомлення про всі ключові події.
-    
-- ⚙️ **Гнучка Конфігурація:** Налаштування через JSON-файли без перезапуску бота.
-    
-- 🗂️ **Модульна Архітектура:** Чітке розділення коду на логічні сервіси.
-    
-- ✍️ **Детальне Логування:** Розділення логів на системні, торгові та звіти по ефективності.
-    
-- 🔒 **Типобезпека фінансових операцій:** Гарантія точності розрахунків завдяки використанню типу `Decimal`.
+`TradingBinanceBot` — це публічний шар документації для приватного production-коду.
 
-- 🛡️ **Комплексна обробка помилок:** Трирівнева система з автоматичним retry, Circuit Breaker та моніторингом якості.
-    
+- Приватний репозиторій (`BinaceBot`): runtime-код, ключі API, виконання торгів.
+- Публічний репозиторій (`TradingBinanceBot`): архітектура, запуск, операційні процедури, тестування, стандарти логування.
 
-## 📄 Гайдлайн для розробників
+## 2. Поточний стан системи (синхронізовано 2026-02-28)
 
-Цей проєкт дотримується строгих стандартів розробки для забезпечення надійності та точності фінансових операцій.
+### Форма рантайму
 
-- [**📂 Детальна мапа файлів проєкту**](/docs/PROJECT_MAP.md) - Архітектура та призначення модулів
-- [**🧪 Гід по тестуванню та валідації**](/docs/guides/TESTING_GUIDE.md) - Комплексна валідація після Stage 3 Refactoring
-- [**📋 Швидкі команди**](/docs/guides/QUICK_COMMANDS.md) - Часто використовувані команди для розробки
+- Thin entrypoint: `src/main_bot.py` + CLI (`--testnet`, `--dry-run`, `--config`, `--strategy`, `--debug`).
+- Координатор циклу: `src/bot_runner.py`.
+- Оркестрація торгівлі: `src/trading/trading_executor.py`.
+- Логіка сигналів/виконання: `src/trade_processor.py`.
+- Портфельний risk-policy: `src/risk/risk_manager.py` з режимами `off|shadow|enforce`.
+- Telegram керування: watchdog + модулі `src/telegram_ui/*`.
 
-## 🗂️ Структура Проєкту
+### Ключовий торговий цикл
 
-```yaml
-BinanceBot/
-├── config/
-│   ├── api_keys.json.example       # Приклад файлу для ключів API
-│   ├── config.json                 # Основний файл налаштувань бота
-│   ├── strategy.json               # Конфігурація торгової стратегії
-│   └── error_code_reference.json   # Мапа кодів помилок
-├── data/
-│   ├── testnet/
-│   │   ├── positions.json          # Поточні позиції
-│   │   └── illiquid_positions.json # Неліквідні активи (blacklist)
-│   ├── mainnet/
-│   └── metrics/                    # Метрики продуктивності
-├── logs/
-│   ├── testnet/
-│   │   ├── activity.log            # Системні події
-│   │   ├── trades.log              # Торгові операції
-│   │   └── performance.log         # Звіти ефективності
-│   └── mainnet/
-├── src/
-│   ├── api/                        # API клієнти та утиліти
-│   ├── decorators/                 # Декоратори для retry та rate limiting
-│   ├── lifecycle/                  # Управління життєвим циклом бота
-│   ├── metrics/                    # Збір та аналіз метрик
-│   ├── monitoring/                 # Моніторинг та performance tracking
-│   ├── strategies/                 # Торгові стратегії та фільтри
-│   ├── trading/                    # Виконання торгових операцій
-│   ├── utils/                      # Допоміжні утиліти
-│   │   ├── api_utils.py            # API response обробка
-│   │   ├── balance_utils.py        # Робота з балансами
-│   │   ├── dynamic_tp_sl.py        # Динамічний TP/SL розрахунок
-│   │   ├── retry.py                # Retry механізм
-│   │   ├── sanitizer.py            # Санітизація чутливих даних
-│   │   └── trading_utils.py        # Торгові хелпери
-│   ├── binance_api_client.py       # Взаємодія з Binance API
-│   ├── bot_context.py              # Thread-safe state management
-│   ├── bot_runner.py               # Головний цикл виконання бота
-│   ├── circuit_breaker.py          # Circuit Breaker для символів
-│   ├── cli_parser.py               # CLI аргументи (--testnet, --dry-run)
-│   ├── config_loader.py            # Завантаження конфігурації
-│   ├── constants.py                # Системні константи
-│   ├── data_manager.py             # Управління даними (positions.json)
-│   ├── decision_matrix.py          # Логіка прийняття торгових рішень
-│   ├── error_constants.py          # Константи помилок
-│   ├── error_handler.py            # Центральний обробник помилок
-│   ├── logging_config.py           # Налаштування логування
-│   ├── main_bot.py                 # Точка входу
-│   ├── models.py                   # Data classes з Decimal валідацією
-│   ├── performance_reporter.py     # Звіти по ефективності
-│   ├── ta_calculator.py            # Розрахунок технічних індикаторів
-│   ├── telegram_bot_commands.py    # Telegram бот команди
-│   ├── telegram_notifier.py        # Сповіщення в Telegram
-│   └── trade_processor.py          # Обробка торгових сигналів
-├── scripts/
-│   ├── backup_data.py              # Резервне копіювання даних
-│   ├── clean_testnet_logs.py       # Очищення testnet даних
-│   ├── smoke_test_runner.py        # Smoke тестування
-│   ├── test_logging_integration.py # Тести логування
-│   ├── validate_thread_safety.py   # Перевірка thread safety
-│   └── verify_data_paths.py        # Перевірка прав доступу
-├── tools/
-│   ├── audit/                      # Інструменти аудиту коду
-│   ├── benchmark/                  # Базові результати бенчмарків
-│   ├── integration/                # Інтеграційні утиліти
-│   ├── benchmark.py                # Тестування продуктивності
-│   ├── detect_cycles.py            # Виявлення циклічних залежностей
-│   ├── mainnet_readiness_analyzer.py # Аналіз готовності до mainnet
-│   └── validate_config.py          # Валідація конфігурації
-├── tests/
-│   ├── test_*.py                   # 130+ тестів (>70% покриття)
-│   └── test_*_property.py          # Property-based тести
-├── docs/
-│   ├── guides/                     # Гайди для розробників
-│   │   ├── FILES_GUIDE.md          # Опис файлів проєкту
-│   │   ├── QUICK_COMMANDS.md       # Швидкі команди
-│   │   └── TESTING_GUIDE.md        # Гід по тестуванню
-│   ├── PROJECT_MAP.md              # Технічна мапа проєкту
-│   └── *.md                        # Аналіз стратегії та логіки
-├── README.md
-├── requirements.txt
-├── requirements-dev.txt
-└── start_bot.sh
-```
+Кожна ітерація проходить по фазах:
 
-## 🛠️ Встановлення та Налаштування
+1. Завантаження market data (ціни + баланси).
+2. Repricing відкритих позицій.
+3. SELL-прохід.
+4. Оновлення балансів (за потреби).
+5. BUY-прохід.
+6. Збереження стану + decision summary + runtime KPI snapshot.
 
-**Крок 1: Клонування репозиторію**
+Важлива властивість: **SELL виконується перед BUY** для зменшення конфліктів зі stale balance.
+
+### Risk і feature flags
+
+У `config/config.json` підтримуються rollout-прапори:
+
+- `freeze_dynamic_tp_sl`
+- `strict_min_notional_enforcement`
+- `use_closed_candles_for_signals`
+- `intelligent_illiquid_unlocking`
+
+Частина прапорів працює у preview/compatibility режимі.
+
+## 3. Ownership конфігурації (Hard-Cut)
+
+- `config/config.json`: операційні runtime-налаштування (інтервали, retry, alerts, risk-manager mode).
+- `config/strategy*.json`: торгова логіка (TP/SL, фільтри, buy targets, пороги індикаторів).
+- Глобальний override обмежений (`settings.enable_ta_confirmation`).
+
+## 4. Основні можливості
+
+- Spot-виконання ордерів + інтеграція Convert path.
+- Модульні фільтри входу: RSI, SMA, ATR, Volume.
+- Risk manager з enforce/shadow телеметрією.
+- Circuit breaker + керування неліквідними позиціями.
+- Структуроване логування + періодичне збереження метрик.
+- Віддалене Telegram-керування процесом через watchdog.
+
+## 5. Безпечний старт
+
+Рекомендований перший запуск у приватному репозиторії:
 
 ```bash
-git clone <URL_ВАШОГО_РЕПОЗИТОРІЮ>
-cd BinanceBot
+cp .env.example .env
+./start_bot.sh --testnet --dry-run
 ```
 
-**Крок 2: Встановлення залежностей** 
-
-Переконайтеся що у кореневій директорії створено файли:
+Потім базова перевірка:
 
 ```bash
-pip install -r requirements.txt
-pip install -r requirements-dev.txt  # Для розробки та тестування
+./scripts/testing/run_tests_quick.sh
 ```
 
-**Крок 3: Налаштування API ключів** 
-
-Створіть API ключі у Binance з дозволами `Enable Reading` та `Enable Spot & Margin Trading`. **НЕ** вмикайте `Enable Withdrawals`. Скопіюйте `config/api_keys.json.example` у `config/api_keys.json` та заповніть вашими ключами.
-
-**Крок 4: Налаштування конфігурації** 
-
-Відредагуйте `config/config.json` та `config/strategy.json` для налаштування параметрів бота.
-
-## ▶️ Запуск Бота
-
-- Для Mainnet:
-
-`bash ./start_bot.sh`
-
-- Для Testnet: 
-
-`bash ./start_bot.sh --testnet`
-
----
-
-## ⚠️ Обробка помилок
-
-Бот реалізує комплексну трирівневу систему обробки помилок для забезпечення максимальної надійності та стійкості.
-
-### 1. Архітектура
-
-- **Рівень API-клієнта (`src/binance_api_client.py`):**   
-  Перехоплює будь-які винятки від API та передає їх на наступний рівень.
-    
-- **Рівень обробника (`src/error_handler.py`):**   
-  Аналізує виняток, класифікує його за категорією (RATE_LIMIT, TRADE_LOGIC_ERROR тощо) та повертає стандартизований об'єкт `ErrorDetails`.
-    
-- **Рівень реагування (`main_bot.py`):**   
-  Приймає фінальне рішення на основі категорії помилки: виконати повторну спробу, позначити актив як неліквідний або критично зупинити бота.
-
-### 2. Життєвий цикл помилки
-
-```mermaid
-sequenceDiagram
-    participant main_bot as Головний цикл
-    participant retry_util as Утиліта Retry
-    participant api_client as API Клієнт
-    participant error_handler as Обробник помилок
-    main_bot->>retry_util: retry_with_backoff(api_call)
-    retry_util->>api_client: Виклик API-функції
-    api_client-->>error_handler: Сталася помилка (Exception)
-    error_handler-->>api_client: Повертає ErrorDetails
-    api_client-->>retry_util: Повертає BotResponse(status="error")
-    alt Помилка повторювана (retryable=true)
-        retry_util->>retry_util: Експоненційна затримка
-        retry_util->>api_client: Повторний виклик
-    end
-    retry_util-->>main_bot: Повертає фінальний BotResponse(status="error")
-    main_bot->>main_bot: handle_final_error()
-```
-
-### 3. Circuit Breaker (Запобігання циклічним збоям)
-
-**Призначення:** Автоматично блокує символи, які генерують повторювані помилки, щоб запобігти безперервним невдалим спробам торгівлі.
-
-**Параметри:**
-- `FAILURE_THRESHOLD = 3` - кількість помилок до блокування
-- `COOLDOWN_PERIOD = 300` секунд (5 хвилин) - час блокування
-- `WINDOW_SIZE = 300` секунд - часове вікно підрахунку помилок
-
-**Приклад:**
-```
-Символ BTCUSDT → 3 помилки LOT_SIZE за 5 хвилин
-→ Circuit Breaker TRIPPED
-→ Символ пропускається наступні 5 хвилин
-→ Після cooldown автоматично розблоковується
-```
-
----
-
-## 🚫 Управління неліквідними позиціями
-
-Система управління неліквідними активами реалізована через thread-safe API в BotContext.
-
-### API (`src/bot_context.py`)
-
-Програмний інтерфейс для автоматичного управління:
-
-```python
-from src.bot_context import BotContext
-
-# Створення контексту бота (зазвичай вже існує в bot_runner)
-context = BotContext(...)
-
-# Додати символ до blacklist
-illiquid_data = {
-    "reason": "Circuit Breaker: 3 trade logic errors",
-    "timestamp": time.time()
-}
-context.add_illiquid_position("BTCUSDT", illiquid_data)
-
-# Перевірити чи в blacklist
-if context.is_illiquid("BTCUSDT"):
-    print("Символ заблоковано")
-
-# Видалити з blacklist
-context.remove_illiquid_position("BTCUSDT")
-
-# Отримати всі заблоковані
-all_illiquid = context.get_all_illiquid_positions()
-
-# Очистити застарілі записи (старіші за 24 години)
-cleaned_count = context.cleanup_expired_illiquid(max_age_hours=24)
-```
-
-### Допоміжні функції (`src/utils/trading_utils.py`)
-
-Високорівневі хелпери для роботи з неліквідними позиціями:
-
-```python
-from src.utils.trading_utils import add_to_illiquid, is_symbol_illiquid
-
-# Додати символ з автоматичним формуванням даних
-add_to_illiquid(symbol="BTCUSDT", reason="Manual block")
-
-# Швидка перевірка (без доступу до контексту)
-if is_symbol_illiquid("BTCUSDT"):
-    print("Символ у blacklist")
-```
-
-### Інтеграція з Circuit Breaker
-
-Коли Circuit Breaker trip, символ автоматично додається до `illiquid_positions.json` і пропускається в головному циклі:
-
-```
-Circuit Breaker TRIPPED (BTCUSDT)
-→ context.add_illiquid_position("BTCUSDT", {...})
-→ Зберігається в data/testnet/illiquid_positions.json
-→ Головний цикл перевіряє context.is_illiquid()
-→ Символ пропускається до ручного видалення або auto-cleanup
-```
-
-### Ручне управління
-
-Для ручного редагування відкрийте `data/testnet/illiquid_positions.json` або `data/mainnet/illiquid_positions.json`:
-
-```json
-{
-  "BTCUSDT": {
-    "reason": "Circuit Breaker: 3 errors",
-    "timestamp": 1703001234.567,
-    "added_at": "2024-12-19T10:30:45"
-  }
-}
-```
-
-Видаліть запис символу та перезапустіть бота, або використайте `cleanup_expired_illiquid()` для автоматичної очистки.
-
----
-
-## 📊 Моніторинг якості (4 SLA метрики)
-
-Система відстежує 4 ключові метрики якості згідно зі Стратегією v10:
-
-### 1. **Retry Success Rate** (Ціль: >70%)
-
-**Формула:** `(Успішні retry) / (Всі retry) × 100%`
-
-**Що показує:** Скільки помилок відновилися завдяки механізму повторних спроб.
-
-**Приклад:**
-```
-10 помилок з retry → 7 успішно відновлено = 70% ✅
-```
-
-**Як покращити якщо <70%:**
-- Перевірте стабільність з'єднання з Binance API
-- Перевірте налаштування `MAX_RETRIES` (має бути 5)
-- Проаналізуйте логи на предмет non-retryable помилок
-
----
-
-### 2. **Circuit Breaker Trip Rate** (Ціль: <5%)
-
-**Формула:** `(Кількість CB trips) / (Всі торгові операції) × 100%`
-
-**Що показує:** Як часто Circuit Breaker блокує символи через повторювані помилки.
-
-**Приклад:**
-```
-100 торгових операцій → 2 CB trips = 2% ✅
-```
-
-**Як покращити якщо >5%:**
-- Перевірте якість торгових сигналів
-- Перегляньте налаштування фільтрів (LOT_SIZE, MIN_NOTIONAL)
-- Перевірте illiquid blacklist на застарілі записи
-- Розгляньте збільшення `FAILURE_THRESHOLD`
-
----
-
-### 3. **Fallback Classification Rate** (Ціль: <20%)
-
-**Формула:** `(Помилки з via_fallback=True) / (Всі помилки) × 100%`
-
-**Що показує:** Відсоток помилок, які не були знайдені в `error_code_reference.json` і класифіковані через fallback механізм.
-
-**Приклад:**
-```
-100 помилок → 15 через fallback = 15% ✅
-```
-
-**Як покращити якщо >20%:**
-- Знайдіть в логах повідомлення з `via_fallback=True`
-- Додайте нові коди помилок в `config/error_code_reference.json`
-- Розширте Regex Map для типових повідомлень
-
----
-
-### 4. **Critical Stops** (Ціль: 0)
-
-**Формула:** Підрахунок подій `CriticalBotStopError`
-
-**Що показує:** Кількість критичних зупинок бота через `AUTH_ERROR_CRITICAL`.
-
-**Приклад:**
-```
-0 критичних зупинок за тиждень = ✅ ЦІЛЬ ДОСЯГНУТА
-```
-
-**Якщо >0:**
-- НЕГАЙНО перевірте логи на наявність `🛑 Зупинка бота`
-- Перевірте валідність API ключів
-- Перевірте IP whitelist на Binance
-- Перевірте права доступу API ключів
-
----
-
-### Як розраховувати метрики
-
-**Автоматичний розрахунок:**
-
-```bash
-# Розрахунок всіх 4 метрик з логів
-python tools/calculate_metrics.py
-
-# Приклад виводу:
-# ✅ Retry Success Rate: 72% (>70%)
-# ✅ CB Trip Rate: 3% (<5%)
-# ⚠️ Fallback Rate: 23% (>20% - потрібна увага!)
-# ✅ Critical Stops: 0
-```
-
-**Частота перевірки:**
-- **Щотижня:** Для моніторингу тенденцій
-- **При аномаліях:** Негайно при незвичній поведінці
-- **Після змін:** Завжди після оновлення конфігурації
-
----
-
-## 🧪 Тестування
-
-Проєкт має комплексну систему тестування з покриттям >70%.
-
-### Запуск тестів
-
-```bash
-# Запуск усіх тестів
-./run_tests.sh
-
-# Запуск з coverage звітом
-pytest --cov=src --cov-report=term-missing
-
-# Запуск конкретного тест-файлу
-pytest tests/test_error_handler.py -v
-
-# Запуск з детальним виводом
-pytest tests/ -v --tb=short
-```
-
-### Структура тестів
-
-```bash
-tests/
-├── test_circuit_breaker.py      # Circuit Breaker (17 тестів)
-├── test_error_handler.py        # ErrorHandler (27 тестів)
-├── test_error_mapping.py        # Класифікація помилок (10 тестів)
-├── test_integration.py          # End-to-end flows (8 тестів)
-├── test_metrics.py              # SLA метрики (18 тестів)
-├── test_retry.py                # Retry Engine (19 тестів)
-├── test_sanitizer.py            # Санітизація даних (22 тести)
-├── test_throttling.py           # Telegram throttling (9 тестів)
-└── test_type_safety.py          # Типобезпека (3 тести)
-```
-
-**Всього:** 130+ тестів, покриття >70%
-
-### Покриття коду (Coverage)
-
-**Цільові значення:**
-- `error_handler.py`: ≥80%
-- `retry.py`: ≥80%
-- `circuit_breaker.py`: ≥70%
-- `bot_context.py`: ≥70%
-- `trade_processor.py`: ≥70%
-
-**Генерація HTML звіту:**
-
-```bash
-pytest --cov=src --cov-report=html
-# Відкрийте htmlcov/index.html у браузері
-```
-
-### Вимоги до середовища
-
-- **Python:** 3.8+ (Рекомендовано: 3.12)
-  - ⚠️ **Python 3.13:** `python-telegram-bot 13.15` несумісний з Python 3.13
-  - ✅ **Python 3.12:** Повна сумісність, рекомендовано для production
-  - ✅ **Python 3.8-3.11:** Повна сумісність
-  - 📖 Детальніше: `docs/PYTHON_3.13_COMPATIBILITY.md`
-- **Залежності:** `requirements-dev.txt`
-
-```bash
-pip install -r requirements-dev.txt
-```
-
-**Основні залежності для тестів:**
-- `pytest` - тестовий фреймворк
-- `pytest-cov` - coverage звіти
-- `pytest-snapshot` - snapshot тести
-- `freezegun` - мок часу
-
-### Оновлення сніпшотів
-
-Якщо ви свідомо змінили логіку, яка впливає на результат `ErrorDetails`:
-
-```bash
-pytest --snapshot-update
-```
-
----
-
-## 📜 Логування
-
-Бот веде логування у три окремі файли в папках `logs/mainnet/` або `logs/testnet/`:
-- `activity.log` — загальна інформація та системні події.
-- `trades.log` — події, пов'язані виключно з торгівлею.
-- `performance.log` — щоденні звіти по ефективності.
-
-**Формат логів:**
-
-```
-2025-11-24 10:30:45 - app - ERROR - [correlation_id: abc-123] [spot_api] TRADE_LOGIC_ERROR: LOT_SIZE filter failure
-```
-
-**Елементи:**
-- Timestamp (UTC)
-- Logger name
-- Log level
-- Correlation ID (для трасування)
-- Origin (джерело помилки)
-- Category (категорія)
-- Message (санітизований)
-
----
-
-## ❓ FAQ (Поширені питання)
-
-### Загальні питання про помилки
-
-**Q:** Що означає `via_fallback=True` в логах?  
-**A:** Це означає, що помилка була ідентифікована за її текстовим повідомленням, а не за унікальним кодом. Це сигнал для розробника додати цей код помилки в `config/error_code_reference.json` для більш точної обробки в майбутньому.
-
-**Q:** Що робити, якщо в логах з'явилася помилка `UNKNOWN_CLIENT_ERROR`?  
-**A:** Це невідома для системи помилка від Binance. Необхідно знайти цей код в офіційній документації Binance, визначити його категорію та додати до `config/error_code_reference.json`. Після цього запустіть валідатор `tools/validate_error_map.py`.
-
-**Q:** Як додати новий код помилки?  
-**A:**
-1. Відкрийте `config/error_code_reference.json`.
-2. Знайдіть потрібну секцію (`spot_api` або `convert_api`).
-3. Додайте новий запис `"код_помилки": "назва_категорії"`.
-4. Запустіть валідатор:
-
-```bash
-python tools/validate_error_map.py
-```
-
-### Питання про метрики
-
-**Q:** Що означає "Retry Success Rate: 65%"?  
-**A:** Це означає, що 65% помилок були успішно відновлені завдяки механізму повторних спроб. Цільове значення >70%. Якщо ваш показник нижче - перевірте стабільність з'єднання та налаштування retry.
-
-**Q:** Що означає "Circuit Breaker Trip Rate: 8%"?  
-**A:** Це означає, що Circuit Breaker спрацював у 8% випадків від загальної кількості торгових операцій. Цільове значення <5%. Якщо вище - перевірте якість торгових сигналів та налаштування фільтрів.
-
-**Q:** Що означає "Fallback Rate: 25%"?  
-**A:** Це означає, що 25% помилок не були знайдені в `error_code_reference.json`. Цільове значення <20%. Додайте нові коди помилок в конфігурацію.
-
-**Q:** Що означає "Critical Stops: 1"?  
-**A:** Це означає, що бот зупинився 1 раз через критичну помилку (`AUTH_ERROR_CRITICAL`). Цільове значення = 0. НЕГАЙНО перевірте валідність API ключів.
-
-### Операційні питання
-
-**Q:** Як часто треба перевіряти метрики?  
-**A:**
-- **Щотижня:** Запускайте `python tools/calculate_metrics.py`
-- **При аномаліях:** Перевірте негайно якщо помітили незвичну поведінку
-- **Після змін:** Завжди після оновлення конфігурації або коду
-
-**Q:** Як розблокувати символ після Circuit Breaker trip?
-**A:**
-1. Перевірте, чому символ trip-нувся (дивіться логи)
-2. Якщо проблема вирішена, зачекайте 5 хвилин (cooldown автоматично скинеться)
-3. Якщо символ доданий до illiquid blacklist: відредагуйте `data/testnet/illiquid_positions.json` та видаліть запис символу, або використайте `context.remove_illiquid_position("SYMBOL")` в коді
-
-**Q:** RATE_LIMIT_ERROR не відправляється в Telegram - це баг?  
-**A:** Ні, це відповідає Стратегії v10. `RATE_LIMIT_ERROR` є ГЛОБАЛЬНОЮ помилкою API (не прив'язана до символу), тому:
-- **НЕ** записується в Circuit Breaker
-- **НЕ** відправляється в Telegram (тимчасова проблема, яка вирішується через retry)
-- Тільки логується як WARNING
-
-**Q:** Чому timestamp НЕ санітизується в логах?  
-**A:** Згідно Стратегії v10, timestamp не є чутливими даними. Їх маскування ускладнює діагностику помилки `-1021` (Timestamp out of the recvWindow), яка потребує точного часу для відлагодження.
-
-### Технічні питання
-
-**Q:** Чому MAX_BACKOFF = 60 секунд, а не більше?  
-**A:** Для торгового бота затримка понад 1 хвилину є критичною:
-- Ціни змінюються швидко
-- Торгові можливості втрачаються
-- 60 секунд — баланс між навантаженням на API та оперативністю
-
-**Q:** Як працює система управління неліквідними позиціями?
-**A:**
-- **API** (`src/bot_context.py`): Thread-safe інтерфейс для Circuit Breaker та всіх компонентів бота
-- **Утиліти** (`src/utils/trading_utils.py`): Високорівневі хелпери для швидкого доступу
-- Дані зберігаються у `data/testnet/illiquid_positions.json` або `data/mainnet/illiquid_positions.json`
-- Thread-safe операції через locks забезпечують безпеку при concurrent доступі
-- Підтримка автоматичного cleanup застарілих записів через `cleanup_expired_illiquid()`
-
----
-
-## 📞 Контакти та підтримка
-
-Якщо у вас виникли питання або ви знайшли баг — будь ласка, створіть Issue у репозиторії GitHub.
-
-## ⚠️ Відмова від відповідальності
-
-Торгівля криптовалютами несе високі ризики. Цей бот є інструментом автоматизації і не гарантує прибутку. Всі рішення та ризики, пов'язані з його використанням, лежать на вас. Завжди тестуйте стратегії у Testnet перед запуском на реальному рахунку.
+## 6. Telegram-команди керування
+
+Керування процесом (watchdog):
+
+- `/start_bot`
+- `/stop_bot`
+- `/restart_bot`
+- `/check_bot`
+- `/reload_config`
+
+Моніторинг:
+
+- `/status`
+- `/positions`
+- `/balance`
+- `/health`
+- `/performance`
+- `/report`
+- `/illiquid`
+
+## 7. Тестовий профіль якості
+
+- Модулі тестів: `120`
+- Модулі property tests: `31`
+- Покриті контракти: feature flags, risk manager, periodic maintenance, Telegram flows, config validation.
+
+## 8. Індекс документації
+
+- Архітектура (EN): [../PROJECT_MAP_EN.md](../PROJECT_MAP_EN.md)
+- Архітектура (UA): [../PROJECT_MAP_UA.md](../PROJECT_MAP_UA.md)
+- Архітектура (FR): [../PROJECT_MAP_FR.md](../PROJECT_MAP_FR.md)
+- Тестування (EN): [../TESTING_GUIDE_EN.md](../TESTING_GUIDE_EN.md)
+- Тестування (UA): [../TESTING_GUIDE_UA.md](../TESTING_GUIDE_UA.md)
+- Тестування (FR): [../TESTING_GUIDE_FR.md](../TESTING_GUIDE_FR.md)
+- Логування (EN): [../LOGGING.md](../LOGGING.md)
+- Логування (UA): [../LOGGING_UA.md](../LOGGING_UA.md)
+- Логування (FR): [../LOGGING_FR.md](../LOGGING_FR.md)
+- Історія змін: [../CHANGELOG.md](../CHANGELOG.md)
+
+## 9. Нотатки з безпеки
+
+- Спочатку тільки testnet.
+- На API ключах не вмикати `withdrawals`.
+- Перед змінами стратегії завжди проганяти `--dry-run`.
+- Перед mainnet перевіряти ліміти `risk_manager`.

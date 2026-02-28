@@ -1,177 +1,114 @@
-# 🧪 Testing & Validation Guide
+# Testing Guide (EN)
 
-This document describes how to run comprehensive project validation after Stage 3 Refactoring.
+Updated: 2026-02-28
 
-## 📋 Available Scripts
+This guide documents the current test/validation workflow used by the private `BinaceBot` runtime.
 
-### 1. `./run_tests.sh` - Full Validation
-**What it does:**
-- ✅ MyPy type checking (`mypy src/ --config-file mypy.ini`)
-- ✅ All unit tests (`pytest tests/ -v`)
-- ✅ Performance regression testing (benchmark vs Stage 2 baseline)
-- ✅ Logging all results to file
+## 1. Prerequisites
 
-**Execution time:** ~5-10 minutes (depending on number of tests)
+From private repo root:
 
 ```bash
-# Make file executable (only once)
-chmod +x run_tests.sh
-
-# Run full validation
-./run_tests.sh
-```
-
-### 2. `./run_tests_quick.sh` - Quick Validation
-**What it does:**
-- ✅ MyPy type checking
-- ✅ Unit tests (stop on first error)
-- ✅ Logging results
-
-**Execution time:** ~1-3 minutes
-
-```bash
-# Make file executable (only once)
-chmod +x run_tests_quick.sh
-
-# Run quick validation
-./run_tests_quick.sh
-```
-
-## 📄 Logging
-
-All results are automatically saved to files:
-
-```bash
-# Full validation
-logs/test_validation_YYYYMMDD_HHMMSS.log
-
-# Quick validation
-logs/quick_validation_YYYYMMDD_HHMMSS.log
-```
-
-### Log Analysis
-
-```bash
-# View entire log
-cat logs/test_validation_20241226_143022.log
-
-# Last 50 lines (summary)
-tail -50 logs/test_validation_20241226_143022.log
-
-# Search for errors
-grep -i "error\|failed\|❌" logs/test_validation_20241226_143022.log
-
-# Search for successful results
-grep -i "✅\|passed\|success" logs/test_validation_20241226_143022.log
-```
-
-## 🎯 Interpreting Results
-
-### ✅ Successful Validation
-```
-🎉 ALL CHECKS PASSED SUCCESSFULLY!
-Stage 3 Refactoring is ready for production
-```
-
-### ❌ Errors Found
-```
-⚠️ ERRORS FOUND: 2
-Check log file for details: logs/test_validation_20241226_143022.log
-```
-
-## 🔍 What the Scripts Check
-
-### MyPy Type Checking
-- Checks type hints in all modules
-- Detects typing errors
-- Confirms Final type enforcement
-
-### Unit Tests (pytest)
-- Runs all 53 test files
-- Tests functionality of all modules
-- Includes property-based tests
-
-### Performance Testing (benchmark)
-- Compares with Stage 2 baseline
-- Detects performance regression
-- Acceptable deviations: ±5% time, ±10% memory
-
-## 🚀 Recommended Workflow
-
-### During Development (Quick Checks)
-```bash
-./run_tests_quick.sh
-```
-
-### Before Commit/Merge (Full Validation)
-```bash
-./run_tests.sh
-```
-
-### After Completing Stage 3
-```bash
-# 1. Full validation
-./run_tests.sh
-
-# 2. Analyze results
-tail -50 logs/test_validation_*.log
-
-# 3. If all OK - ready for production!
-```
-
-## 🛠️ Troubleshooting
-
-### Problem: "Permission denied"
-```bash
-chmod +x run_tests.sh run_tests_quick.sh
-```
-
-### Problem: "Virtual environment not found"
-```bash
-# Create venv if it doesn't exist
 python3 -m venv .venv
 source .venv/bin/activate
+pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-### Problem: "MyPy not found"
+## 2. Main Validation Scripts
+
+### Quick validation
+
 ```bash
-pip install mypy
+./scripts/testing/run_tests_quick.sh
 ```
 
-### Problem: "Benchmark baseline not found"
+Use for fast iteration checks.
+
+### Full validation
+
 ```bash
-# Create new baseline
-python tools/benchmark.py --iterations 50 --save stage3_baseline
+./scripts/testing/run_tests.sh
 ```
 
-## 📊 Example Successful Output
+Includes stricter checks and benchmark/non-regression path.
 
-```
-==============================================
-🎯 VALIDATION COMPLETED
-==============================================
-📄 Full log saved to: logs/test_validation_20241226_143022.log
-📊 Overall result: ✅ SUCCESSFUL
+## 3. Direct Test Commands
 
-For result analysis:
-  cat logs/test_validation_20241226_143022.log
-  tail -50 logs/test_validation_20241226_143022.log
-==============================================
+Run full pytest suite:
+
+```bash
+.venv/bin/python -m pytest tests/ -v
 ```
 
-## 🎉 Stage 3 Completion Checklist
+Run one module:
 
-After successful `./run_tests.sh` run:
+```bash
+.venv/bin/python -m pytest tests/test_risk_manager.py -v
+```
 
-- [ ] ✅ MyPy Type Checking: PASSED
-- [ ] ✅ Unit Tests (pytest): PASSED
-- [ ] ✅ Performance Testing: PASSED
-- [ ] 📄 Log file saved and analyzed
-- [ ] 🚀 Stage 3 Refactoring ready for production
+Run feature-flag/runtime contract tests:
 
----
+```bash
+.venv/bin/python -m pytest tests/test_feature_flags_contract.py -v
+.venv/bin/python -m pytest tests/test_feature_flag_runtime_contract.py -v
+```
 
-**Created:** Stage 3 Refactoring - Polish & Optimization  
-**Version:** v1.0  
-**Date:** December 26, 2025
+Run trading execution guardrails tests:
+
+```bash
+.venv/bin/python -m pytest tests/test_trading_executor_buy_guardrails.py -v
+```
+
+## 4. Type Checking
+
+```bash
+.venv/bin/python -m mypy src --config-file config/.mypy.ini
+```
+
+## 5. Useful Focus Areas
+
+- Risk policy engine: `tests/test_risk_manager.py`
+- Runtime risk integration: `tests/test_trading_executor_buy_guardrails.py`
+- Config contract: `tests/test_config_loader_validation.py`
+- Feature flags contract: `tests/test_feature_flags_contract.py`
+- Telegram flows: `tests/test_telegram_*`
+- Maintenance cadence: `tests/test_bot_runner_periodic_maintenance.py`
+
+## 6. Test Inventory Snapshot
+
+- Test modules: `120`
+- Property test modules: `31`
+
+## 7. Logs and Artifacts
+
+Common output locations:
+
+- `logs/quick_validation_*.log`
+- `logs/test_validation_*.log`
+- `tools/benchmark/*.json`
+
+## 8. Recommended Workflow
+
+1. Run `run_tests_quick.sh` during development.
+2. Run targeted module tests for touched components.
+3. Run full `run_tests.sh` before merge/release.
+4. Review logs for retries/errors/performance drifts.
+
+## 9. Troubleshooting
+
+- `Permission denied` on scripts:
+
+```bash
+chmod +x scripts/testing/run_tests.sh scripts/testing/run_tests_quick.sh
+```
+
+- Missing dependencies:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+- MyPy config path mismatch:
+
+Use `config/.mypy.ini` (not root `mypy.ini`).
