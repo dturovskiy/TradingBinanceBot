@@ -1,121 +1,87 @@
 # Документація Binance Trading Bot (UA)
 
-Публічна документація для приватного проєкту `BinaceBot`.
+Публічна безпечна документація для приватної реалізації торгового бота.
 
-## 1. Призначення цього репозиторію
+## 1. Межа репозиторіїв
 
-`TradingBinanceBot` — це публічний шар документації для приватного production-коду.
+`TradingBinanceBot` публікує стабільні операторські контракти. Runtime-код,
+credentials, production-state та внутрішні докази залишаються приватними.
 
-- Приватний репозиторій (`BinaceBot`): runtime-код, ключі API, виконання торгів.
-- Публічний репозиторій (`TradingBinanceBot`): архітектура, запуск, операційні процедури, тестування, стандарти логування.
+Поточний public-safe snapshot:
 
-## 2. Поточний стан системи (синхронізовано 2026-02-28)
+- дата public-safe review приватної основи: `2026-05-26`;
+- дата синхронізації документації: `2026-05-30`.
 
-### Форма рантайму
+## 2. Форма рантайму
 
-- Thin entrypoint: `src/main_bot.py` + CLI (`--testnet`, `--dry-run`, `--config`, `--strategy`, `--debug`).
-- Координатор циклу: `src/bot_runner.py`.
-- Оркестрація торгівлі: `src/trading/trading_executor.py`.
-- Логіка сигналів/виконання: `src/trade_processor.py`.
-- Портфельний risk-policy: `src/risk/risk_manager.py` з режимами `off|shadow|enforce`.
-- Telegram керування: watchdog + модулі `src/telegram_ui/*`.
+- Thin entrypoint і CLI bootstrap.
+- Власник верхньорівневого циклу: `BotRunner`.
+- Власник orchestration кожної ітерації: `TradingExecutor`.
+- Деталі symbol-level рішень і виконання: `TradeProcessor`.
+- Семантика portfolio risk: `RiskManager`.
+- Monitoring, observability, metrics, reporting, Telegram delivery та локальні control surfaces є окремими доменами.
 
-### Ключовий торговий цикл
+## 3. Інваріант торгового циклу
 
-Кожна ітерація проходить по фазах:
+Кожна ітерація готує market/position context, виконує SELL-перевірки,
+за потреби оновлює баланси та лише після цього обробляє BUY-кандидатів.
 
-1. Завантаження market data (ціни + баланси).
-2. Repricing відкритих позицій.
-3. SELL-прохід.
-4. Оновлення балансів (за потреби).
-5. BUY-прохід.
-6. Збереження стану + decision summary + runtime KPI snapshot.
+Ключовий інваріант: **SELL виконується перед BUY**, щоб зменшити конфлікти зі stale balance.
 
-Важлива властивість: **SELL виконується перед BUY** для зменшення конфліктів зі stale balance.
+## 4. Ownership конфігурації
 
-### Risk і feature flags
+- `config/config.json`: операційні runtime-параметри — cadence, retry,
+  telemetry, notifications і режим risk manager.
+- `config/strategy*.json`: торгова логіка — TP/SL, правила індикаторів,
+  targets і підтримувані asset overrides.
+- Strategy-owned ключі не мають fallback до operational config.
+- Мінімальний глобальний TA override: `settings.enable_ta_confirmation`.
 
-У `config/config.json` підтримуються rollout-прапори:
+## 5. Безпека виконання
 
-- `freeze_dynamic_tp_sl`
-- `strict_min_notional_enforcement`
-- `use_closed_candles_for_signals`
-- `intelligent_illiquid_unlocking`
+- `--dry-run` симулює виконання без реальних ордерів.
+- Market-data і balance reads залишаються доступними для валідації.
+- Convert paths працюють лише у mainnet і не мають виконуватися у dry-run.
+- Symbol-level помилки мають блокувати або пропускати конкретний символ;
+  зупинка всього бота зарезервована для credential-level проблем.
+- Runtime config і strategy-файли підтримують контрольований hot reload;
+  зміни API-ключів вимагають restart.
+- У detached launcher mode wrapper завершується після успішного запуску child-процесу,
+  а процес бота продовжує працювати.
 
-Частина прапорів працює у preview/compatibility режимі.
+## 6. Same-Core Research і Backtesting
 
-## 3. Ownership конфігурації (Hard-Cut)
+Історичний research відділений від live trading:
 
-- `config/config.json`: операційні runtime-налаштування (інтервали, retry, alerts, risk-manager mode).
-- `config/strategy*.json`: торгова логіка (TP/SL, фільтри, buy targets, пороги індикаторів).
-- Глобальний override обмежений (`settings.enable_ta_confirmation`).
+1. Оновлюємо локальний OHLCV-архів через companion data-ingestion workflow.
+2. Передаємо archive root в offline research tools.
+3. Запускаємо same-core replay, enabled-universe evaluation, ranking і focused sweeps.
+4. Порівнюємо baseline та candidate artifacts.
+5. Лише після evidence review рухаємо candidate через testnet, shadow і live rollout.
 
-## 4. Основні можливості
+Читайте: [Research / Backtesting](research/backtesting.md).
 
-- Spot-виконання ордерів + інтеграція Convert path.
-- Модульні фільтри входу: RSI, SMA, ATR, Volume.
-- Risk manager з enforce/shadow телеметрією.
-- Circuit breaker + керування неліквідними позиціями.
-- Структуроване логування + періодичне збереження метрик.
-- Віддалене Telegram-керування процесом через watchdog.
+## 7. Межі артефактів
 
-## 5. Безпечний старт
-
-Рекомендований перший запуск у приватному репозиторії:
-
-```bash
-cp .env.example .env
-./start_bot.sh --testnet --dry-run
-```
-
-Потім базова перевірка:
-
-```bash
-./scripts/testing/run_tests_quick.sh
-```
-
-## 6. Telegram-команди керування
-
-Керування процесом (watchdog):
-
-- `/start_bot`
-- `/stop_bot`
-- `/restart_bot`
-- `/check_bot`
-- `/reload_config`
-
-Моніторинг:
-
-- `/status`
-- `/positions`
-- `/balance`
-- `/health`
-- `/performance`
-- `/report`
-- `/illiquid`
-
-## 7. Тестовий профіль якості
-
-- Модулі тестів: `120`
-- Модулі property tests: `31`
-- Покриті контракти: feature flags, risk manager, periodic maintenance, Telegram flows, config validation.
+- Mutable runtime state: `data/<env>/`.
+- Mutable metrics state: `data/metrics/<env>/`.
+- Runtime logs: `logs/<env>/<hostname>/`.
+- Root process-control logs: `logs/watchdog.log`, `logs/bot_launcher.log`.
+- Generated offline outputs: `data/out/<domain>/`.
+- Human-maintained documentation: `docs/`.
 
 ## 8. Індекс документації
 
-- Архітектура (EN): [../en/architecture/project_map.md](../en/architecture/project_map.md)
-- Архітектура (UA): [architecture/project_map.md](architecture/project_map.md)
-- Архітектура (FR): [../fr/architecture/project_map.md](../fr/architecture/project_map.md)
-- Тестування (EN): [../en/testing/testing_guide.md](../en/testing/testing_guide.md)
-- Тестування (UA): [testing/testing_guide.md](testing/testing_guide.md)
-- Тестування (FR): [../fr/testing/testing_guide.md](../fr/testing/testing_guide.md)
-- Логування (EN): [../en/operations/logging.md](../en/operations/logging.md)
-- Логування (UA): [operations/logging.md](operations/logging.md)
-- Логування (FR): [../fr/operations/logging.md](../fr/operations/logging.md)
-- Історія змін: [../../CHANGELOG.md](../../CHANGELOG.md)
+- [Архітектура](architecture/project_map.md)
+- [Research / Backtesting](research/backtesting.md)
+- [Тестування](testing/testing_guide.md)
+- [Логування та артефакти](operations/logging.md)
+- [Shared Scope](../shared/docs_scope.md)
+- [Public Sync Manifest](../shared/public_sync_manifest.md)
 
 ## 9. Нотатки з безпеки
 
-- Спочатку тільки testnet.
-- На API ключах не вмикати `withdrawals`.
-- Перед змінами стратегії завжди проганяти `--dry-run`.
-- Перед mainnet перевіряти ліміти `risk_manager`.
+- Починайте з testnet і dry-run.
+- Не вмикайте withdrawals для trading API keys.
+- Перед mainnet rollout перевіряйте risk limits.
+- Не публікуйте runtime-state, архіви даних та internal evidence.

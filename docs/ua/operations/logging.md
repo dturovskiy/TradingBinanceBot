@@ -1,90 +1,73 @@
-# Гід з Логування (UA)
+# Гайд з Логування та Артефактів (UA)
 
-Оновлено: 2026-02-28
+Оновлено: 2026-05-30
 
-Документ відображає фактичну поведінку логування приватного `BinaceBot`.
+## 1. Призначення
 
-## 1. Топологія логерів
+Logs, mutable runtime state, metrics state і generated offline outputs мають
+різні ownership rules. Під час експлуатації та debug тримайте їх окремо.
 
-У `src/logging_config.py` налаштовані:
-
-- `app`
-- `trade`
-- `performance`
-- `metrics`
-- `portfolio`
-- `illiquid_health`
-- `decision_matrix`
-- `circuit_breaker`
-- `data_manager`
-- `api`
-
-Watchdog пише окремо через `scripts/monitoring/watchdog_monitor.py`.
-
-## 2. Структура директорій
+## 2. Runtime Log Layout
 
 ```text
 logs/
-  mainnet/
-    <hostname>/
-      activity.log
-      trades.log
-      performance.log
-      metrics.log
-  testnet/
-    <hostname>/
-      activity.log
-      trades.log
-      performance.log
-      metrics.log
+  mainnet/<hostname>/
+    activity.log
+    trades.log
+    performance.log
+    metrics.log
+  testnet/<hostname>/
+    activity.log
+    trades.log
+    performance.log
+    metrics.log
   watchdog.log
+  bot_launcher.log
 ```
 
-Підкаталог `<hostname>` потрібен для уникнення конфліктів між інстансами на різних хостах.
+Hostname partitioning запобігає конфліктам, коли кілька машин пишуть у shared storage.
 
-## 3. Політика ротації
+## 3. State і Metrics
 
-- Тип: size-based (`RotatingFileHandler`)
-- Розмір файлу: `10 MB`
-- Backup count: `30`
-- Компресія: вимкнена за замовчуванням
+```text
+data/<env>/          # mutable runtime state
+data/metrics/<env>/  # mutable telemetry, health і error counters
+```
 
-## 4. Призначення файлів
+Ці шляхи є operational state, а не документацією.
 
-- `activity.log`: системні події, lifecycle, runtime.
-- `trades.log`: тільки торговий стрім (`trade` logger).
-- `performance.log`: форматовані performance-репорти.
-- `metrics.log`: збереження метрик і лічильників.
-- `watchdog.log`: події watchdog і remote control.
+## 4. Generated Offline Outputs
 
-## 5. Корисні поля в логах
+```text
+data/out/audit/
+data/out/benchmark/
+data/out/integration/
+data/out/readiness/
+data/out/reporting/
+data/out/testing/
+```
 
-- `operation`
-- `symbol`
-- `stage`
-- `reason_code`
-- `iteration`
-- `recovery_action`
-- `risk_manager_mode`
-- feature-поля (`feature_*`)
+Generated outputs за замовчуванням не слід зберігати у `docs/` або tooling source directories.
 
-## 6. Безпека
-
-- Не логувати сирі API ключі/секрети.
-- Використовувати sanitizer для чутливих даних.
-- Не скидати повні payload зовнішніх API в ERROR.
-
-## 7. Операційні команди
+## 5. Корисні Команди
 
 ```bash
 tail -f logs/testnet/$(hostname)/activity.log
 tail -f logs/testnet/$(hostname)/trades.log
 tail -f logs/watchdog.log
-rg "risk_manager|reason_code|decision summary" logs/testnet/$(hostname)/activity.log
+tail -f logs/bot_launcher.log
 ```
 
-## 8. Типові помилки
+## 6. Правила Безпеки
 
-- Ігнорувати `<hostname>` у шляхах.
-- Очікувати time-based ротацію (у нас size-based).
-- Змішувати діагностику watchdog і main bot без розділення контексту.
+- Не логуйте raw API keys, secrets, tokens або chat identifiers.
+- Тримайте sanitization активним для зовнішніх payloads.
+- Використовуйте reason codes і contextual IDs замість sensitive responses.
+- Не публікуйте production logs або generated runtime data у docs-репозиторії.
+
+## 7. Типові Помилки
+
+- Читання legacy log paths без `<hostname>`.
+- Змішування root control logs і env/host runtime logs.
+- Сприйняття generated reports як canonical documentation.
+- Коміт локальних research archives або generated outputs.

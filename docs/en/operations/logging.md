@@ -1,115 +1,75 @@
-# Logging Guide (EN)
+# Logging and Artifact Guide (EN)
 
-Updated: 2026-02-28
+Updated: 2026-05-30
 
-This guide reflects the current logging behavior of private `BinaceBot` runtime.
+## 1. Purpose
 
-## 1. Logger Topology
+Logs, mutable runtime state, metrics state, and generated offline outputs have
+different ownership rules. Keep them separated during operation and debugging.
 
-Configured in `src/logging_config.py`:
-
-- `app`
-- `trade`
-- `performance`
-- `metrics`
-- `portfolio`
-- `illiquid_health`
-- `decision_matrix`
-- `circuit_breaker`
-- `data_manager`
-- `api`
-
-Watchdog uses dedicated logger in `scripts/monitoring/watchdog_monitor.py`.
-
-## 2. Log Directory Layout
-
-Main bot logs are host-scoped:
+## 2. Runtime Log Layout
 
 ```text
 logs/
-  mainnet/
-    <hostname>/
-      activity.log
-      trades.log
-      performance.log
-      metrics.log
-  testnet/
-    <hostname>/
-      activity.log
-      trades.log
-      performance.log
-      metrics.log
+  mainnet/<hostname>/
+    activity.log
+    trades.log
+    performance.log
+    metrics.log
+  testnet/<hostname>/
+    activity.log
+    trades.log
+    performance.log
+    metrics.log
   watchdog.log
+  bot_launcher.log
 ```
 
-Reason for hostname partition:
-- avoids conflicts when multiple hosts write to shared storage.
+Hostname partitioning avoids collisions when more than one machine writes to
+shared storage.
 
-## 3. Rotation Policy
+## 3. State and Metrics
 
-Configured with `RotatingFileHandler`:
+```text
+data/<env>/          # mutable runtime state
+data/metrics/<env>/  # mutable telemetry, health, and error counters
+```
 
-- Max file size: `10 MB`
-- Backup count: `30`
-- Compression: not enabled by default
-- Rotation type: size-based
+Treat these paths as operational state, not documentation.
 
-## 4. Content Responsibility by File
+## 4. Generated Offline Outputs
 
-- `activity.log`: app/runtime/lifecycle/general events.
-- `trades.log`: trade-only stream (`trade` logger filtered).
-- `performance.log`: formatted performance summaries.
-- `metrics.log`: metrics persistence and counters.
-- `watchdog.log`: watchdog heartbeat/control events.
+```text
+data/out/audit/
+data/out/benchmark/
+data/out/integration/
+data/out/readiness/
+data/out/reporting/
+data/out/testing/
+```
 
-## 5. Operational Fields to Keep in Logs
+Generated outputs should not be stored under `docs/` or tooling source directories
+by default.
 
-Recommended structured context (where available):
-
-- `operation`
-- `symbol`
-- `stage`
-- `reason_code`
-- `iteration`
-- `recovery_action`
-- `risk_manager_mode`
-- feature flags (`feature_*`)
-
-## 6. Security and Privacy Rules
-
-- Never log raw API keys/secrets.
-- Keep sanitizer active for sensitive payloads.
-- Avoid dumping full external responses in ERROR paths.
-- Use contextual IDs/reason codes instead of secrets.
-
-## 7. Useful Commands
-
-Tail current testnet activity for current host:
+## 5. Useful Commands
 
 ```bash
 tail -f logs/testnet/$(hostname)/activity.log
-```
-
-Tail trade stream:
-
-```bash
 tail -f logs/testnet/$(hostname)/trades.log
-```
-
-Watchdog logs:
-
-```bash
 tail -f logs/watchdog.log
+tail -f logs/bot_launcher.log
 ```
 
-Find risk decisions:
+## 6. Security Rules
 
-```bash
-rg "risk_manager|reason_code|decision summary" logs/testnet/$(hostname)/activity.log
-```
+- Never log raw API keys, secrets, tokens, or chat identifiers.
+- Keep sanitization active for external payloads.
+- Prefer reason codes and contextual IDs over raw sensitive responses.
+- Do not publish production logs or generated runtime data in this docs repository.
 
-## 8. Common Pitfalls
+## 7. Common Pitfalls
 
-- Reading old paths without `<hostname>` subdirectory.
-- Assuming daily rotation (it is size-based).
-- Mixing watchdog and main-bot events when debugging process control.
+- Reading legacy log paths without the `<hostname>` segment.
+- Mixing root control logs with env/host runtime logs.
+- Treating generated reports as canonical documentation.
+- Committing local research archives or generated outputs.
