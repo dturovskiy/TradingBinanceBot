@@ -1,12 +1,12 @@
 # Documentation Index
 
-Primary entrypoint for all project documentation.
+Primary entrypoint for public-safe project documentation.
 
 ## Language Navigation
 
 - English: [Overview](en/overview.md)
 - Ukrainian: [Огляд](ua/overview.md)
-- French: [Apercu](fr/overview.md)
+- French: [Aperçu](fr/overview.md)
 
 ## Technical Guides by Language
 
@@ -14,8 +14,9 @@ Primary entrypoint for all project documentation.
 | --- | --- | --- | --- |
 | Overview | [Open](en/overview.md) | [Open](ua/overview.md) | [Open](fr/overview.md) |
 | Architecture | [Open](en/architecture/project_map.md) | [Open](ua/architecture/project_map.md) | [Open](fr/architecture/project_map.md) |
+| Research / Backtesting | [Open](en/research/backtesting.md) | [Open](ua/research/backtesting.md) | [Open](fr/research/backtesting.md) |
 | Testing | [Open](en/testing/testing_guide.md) | [Open](ua/testing/testing_guide.md) | [Open](fr/testing/testing_guide.md) |
-| Logging | [Open](en/operations/logging.md) | [Open](ua/operations/logging.md) | [Open](fr/operations/logging.md) |
+| Logging and Artifacts | [Open](en/operations/logging.md) | [Open](ua/operations/logging.md) | [Open](fr/operations/logging.md) |
 
 ## Shared Maintenance Docs
 
@@ -23,6 +24,8 @@ Primary entrypoint for all project documentation.
 - [Sync Policy](shared/docs_sync_policy.md)
 - [Style Guide](shared/style_guide.md)
 - [Glossary](shared/glossary.md)
+- [Public Sync Manifest](shared/public_sync_manifest.md)
+- [Public Release Checklist](shared/public_release_checklist.md)
 
 ## Validation Utilities
 

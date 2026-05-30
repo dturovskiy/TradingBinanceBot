@@ -1,118 +1,88 @@
 # Documentation Binance Trading Bot (FR)
 
-Documentation publique du projet prive `BinaceBot`.
+Documentation publique sécurisée pour une implémentation privée de trading bot.
 
-## 1. Role de ce depot
+## 1. Limite des dépôts
 
-`TradingBinanceBot` est la couche publique de documentation du systeme prive.
+`TradingBinanceBot` publie les contrats stables destinés aux opérateurs. Le code
+runtime, les identifiants, l'état de production et les preuves internes restent privés.
 
-- Depot prive (`BinaceBot`) : code runtime, cles API, execution reelle.
-- Depot public (`TradingBinanceBot`) : architecture, procedures, tests, standards de logs.
+Snapshot public-safe :
 
-## 2. Etat actuel (synchronise le 2026-02-28)
+- date de revue public-safe : `2026-05-26`;
+- date de synchronisation documentaire : `2026-05-30`.
 
-### Structure runtime
+## 2. Structure runtime
 
-- Point d'entree fin : `src/main_bot.py` + CLI (`--testnet`, `--dry-run`, `--config`, `--strategy`, `--debug`).
-- Coordinateur : `src/bot_runner.py`.
-- Orchestrateur trading : `src/trading/trading_executor.py`.
-- Logique signaux/execution : `src/trade_processor.py`.
-- Politique de risque portefeuille : `src/risk/risk_manager.py` (`off|shadow|enforce`).
-- Controle Telegram : watchdog + `src/telegram_ui/*`.
+- Entrypoint fin et bootstrap CLI.
+- Boucle runtime de haut niveau détenue par `BotRunner`.
+- Orchestration de chaque itération détenue par `TradingExecutor`.
+- Décisions et exécution par symbole détenues par `TradeProcessor`.
+- Sémantique de risque portefeuille détenue par `RiskManager`.
+- Monitoring, observability, métriques, reporting, livraison Telegram et surfaces
+  de contrôle locales sont des domaines distincts.
 
-### Cycle d'iteration
+## 3. Invariant du cycle de trading
 
-1. Recuperation marche (prix + balances).
-2. Repricing des positions.
-3. Passage SELL.
-4. Refresh balance si necessaire.
-5. Passage BUY.
-6. Persistance + decision summary + KPI runtime.
+Chaque itération prépare le contexte marché/positions, traite les vérifications SELL,
+rafraîchit les balances si nécessaire, puis traite les candidats BUY.
 
-Comportement cle : **SELL avant BUY**.
+Invariant clé : **SELL est traité avant BUY** afin de réduire les conflits de stale balance.
 
-### Feature flags de rollout
+## 4. Ownership de configuration
 
-Dans `config/config.json`:
+- `config/config.json` : paramètres runtime opérationnels — cadence, retry,
+  telemetry, notifications et mode risk manager.
+- `config/strategy*.json` : logique de trading — TP/SL, indicateurs, targets
+  et overrides d'actifs pris en charge.
+- Les clés détenues par la stratégie ne retombent pas sur la configuration opérationnelle.
+- Override TA global minimal : `settings.enable_ta_confirmation`.
 
-- `freeze_dynamic_tp_sl`
-- `strict_min_notional_enforcement`
-- `use_closed_candles_for_signals`
-- `intelligent_illiquid_unlocking`
+## 5. Sécurité d'exécution
 
-Certaines options restent en mode preview/compatibilite.
+- `--dry-run` simule l'exécution sans placer d'ordres réels.
+- Les lectures market-data et balances restent disponibles pour la validation.
+- Les chemins Convert sont réservés au mainnet et ne doivent pas s'exécuter en dry-run.
+- Les erreurs par symbole doivent suspendre ou ignorer le symbole concerné ;
+  l'arrêt global est réservé aux problèmes de credentials.
+- Les fichiers runtime config et strategy supportent un hot reload contrôlé ;
+  les changements de clés API exigent un redémarrage.
+- En mode launcher détaché, le wrapper se termine après le démarrage réussi du
+  processus enfant, tandis que le bot continue de fonctionner.
 
-## 3. Ownership de configuration
+## 6. Same-Core Research et Backtesting
 
-- `config/config.json` : runtime operationnel.
-- `config/strategy*.json` : logique de trading.
-- Override global volontairement minimal (`settings.enable_ta_confirmation`).
+La recherche historique reste séparée du live trading :
 
-## 4. Capacites principales
+1. Rafraîchir une archive OHLCV locale via un workflow companion d'ingestion.
+2. Passer l'archive root aux outils offline de recherche.
+3. Lancer replay same-core, évaluation enabled-universe, ranking et sweeps ciblés.
+4. Comparer les artifacts baseline et candidate.
+5. Promouvoir uniquement après revue des preuves vers testnet, shadow, puis live.
 
-- Execution Spot avec chemins Convert.
-- Filtres modulaires : RSI, SMA, ATR, Volume.
-- Risk manager avec telemetry shadow/enforce.
-- Circuit breaker + controle des positions illiquides.
-- Logging structure + persistance periodique des metriques.
-- Controle distant Telegram via watchdog.
+Lire : [Research / Backtesting](research/backtesting.md).
 
-## 5. Demarrage securise
+## 7. Limites des artifacts
 
-Dans le depot prive:
+- État runtime mutable : `data/<env>/`.
+- État métriques mutable : `data/metrics/<env>/`.
+- Logs runtime : `logs/<env>/<hostname>/`.
+- Logs de contrôle racine : `logs/watchdog.log`, `logs/bot_launcher.log`.
+- Sorties offline générées : `data/out/<domain>/`.
+- Documentation maintenue manuellement : `docs/`.
 
-```bash
-cp .env.example .env
-./start_bot.sh --testnet --dry-run
-```
+## 8. Index documentaire
 
-Validation rapide:
+- [Architecture](architecture/project_map.md)
+- [Research / Backtesting](research/backtesting.md)
+- [Tests](testing/testing_guide.md)
+- [Logs et artifacts](operations/logging.md)
+- [Shared Scope](../shared/docs_scope.md)
+- [Public Sync Manifest](../shared/public_sync_manifest.md)
 
-```bash
-./scripts/testing/run_tests_quick.sh
-```
+## 9. Notes de sécurité
 
-## 6. Commandes Telegram
-
-Controle processus:
-
-- `/start_bot`
-- `/stop_bot`
-- `/restart_bot`
-- `/check_bot`
-- `/reload_config`
-
-Monitoring:
-
-- `/status`
-- `/positions`
-- `/balance`
-- `/health`
-- `/performance`
-- `/report`
-- `/illiquid`
-
-## 7. Profil qualite (tests)
-
-- Modules de test: `120`
-- Modules property tests: `31`
-
-## 8. Index documentation
-
-- Architecture EN: [../en/architecture/project_map.md](../en/architecture/project_map.md)
-- Architecture UA: [../ua/architecture/project_map.md](../ua/architecture/project_map.md)
-- Architecture FR: [architecture/project_map.md](architecture/project_map.md)
-- Testing EN: [../en/testing/testing_guide.md](../en/testing/testing_guide.md)
-- Testing UA: [../ua/testing/testing_guide.md](../ua/testing/testing_guide.md)
-- Testing FR: [testing/testing_guide.md](testing/testing_guide.md)
-- Logging EN: [../en/operations/logging.md](../en/operations/logging.md)
-- Logging UA: [../ua/operations/logging.md](../ua/operations/logging.md)
-- Logging FR: [operations/logging.md](operations/logging.md)
-- Changelog: [../../CHANGELOG.md](../../CHANGELOG.md)
-
-## 9. Notes de securite
-
-- Toujours commencer en testnet.
-- Ne jamais activer les retraits sur les cles API.
-- Utiliser `--dry-run` avant tout changement de strategie.
-- Verifier les limites `risk_manager` avant mainnet.
+- Commencer par testnet et dry-run.
+- Ne jamais activer withdrawals pour les clés API de trading.
+- Vérifier les limites de risque avant tout rollout mainnet.
+- Ne pas publier l'état runtime, les archives de données ou les preuves internes.

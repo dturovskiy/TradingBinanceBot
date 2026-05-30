@@ -1,147 +1,95 @@
-# Extended Project Map (EN)
+# Project Map (EN)
 
-Updated: 2026-02-28
-Target runtime: private `BinaceBot`
+Updated: 2026-05-30
+Public-safe source review date: `2026-05-26`
 
-## 1. High-Level Architecture
+## 1. Public Documentation Boundary
 
-```mermaid
-graph TD
-    A[src/main_bot.py] --> B[src/bot_runner.py]
-    B --> C[src/lifecycle/lifecycle_manager.py]
-    B --> D[src/trading/trading_executor.py]
-    D --> E[src/trade_processor.py]
-    D --> F[src/risk/risk_manager.py]
-    E --> G[src/api/*]
-    E --> H[src/strategies/filter_manager/filter_manager.py]
-    H --> I[src/strategies/filters/*]
-    B --> J[src/monitoring/*]
-    B --> K[src/metrics/*]
-    B --> L[src/telegram_notifier.py]
-    M[scripts/monitoring/watchdog_monitor.py] --> N[src/telegram_ui/*]
+This map describes stable public-safe ownership boundaries. It does not mirror
+private source code or expose internal-only evidence.
+
+## 2. Runtime Ownership Domains
+
+| Domain | Responsibility | Public-safe path examples |
+| --- | --- | --- |
+| Bootstrap / lifecycle | CLI bootstrap, startup, shutdown, initialization, runtime snapshots | `src/main_bot.py`, `src/bot_runner.py`, `src/lifecycle/*` |
+| Mutable runtime context | Thread-safe shared state and coordination | `src/bot_context.py` |
+| Trading iteration | Buy/sell sequencing, summaries, risk integration | `src/trading/*` |
+| Trade execution detail | Validation, sizing, execution, persistence updates | `src/trade_processor.py`, `src/api/*` |
+| Portfolio risk | Risk decisions, shadow/enforce actions, reason taxonomy | `src/risk/*` |
+| Monitoring / observability | Heartbeat, performance, metrics, reports | `src/monitoring/*`, `src/observability/*`, `src/metrics/*` |
+| Telegram / operator control | Notifications, menus, callbacks, watchdog control | `src/telegram_ui/*`, `scripts/monitoring/*` |
+| Local interface | Local control and audit/research launch surface | `interface/*` |
+| Offline tooling | Audit, analysis, diagnostics, benchmarks, integration tools | `tools/*` |
+
+## 3. High-Level Runtime Flow
+
+1. Bootstrap parses CLI flags and loads runtime and strategy configuration.
+2. Lifecycle initialization loads exchange state, positions, monitoring, and snapshots.
+3. The main loop checks supported config hot-reload boundaries.
+4. `TradingExecutor` prepares context, runs SELL checks, refreshes balances when
+   required, then processes BUY candidates.
+5. `TradeProcessor` validates opportunities, computes sizing and stop/target levels,
+   executes or simulates actions, and persists results.
+6. Monitoring, metrics, reports, and operator notifications are refreshed.
+
+Key invariant: **SELL before BUY**.
+
+## 4. Configuration Ownership
+
+| Domain | Canonical owner |
+| --- | --- |
+| Operational cadence, retry, telemetry, notifications, runtime switches | `config/config.json` |
+| TP/SL, indicators, targets, supported asset overrides | `config/strategy*.json` |
+| Minimal global TA kill-switch | `settings.enable_ta_confirmation` |
+
+Strategy-owned parameters do not use operational config as a fallback.
+
+## 5. Execution-Safety Contracts
+
+- Dry-run performs simulated execution and must not place real orders.
+- Convert execution is mainnet-only and disabled for dry-run.
+- Circuit-breaker and error handling should contain symbol-level failures locally.
+- API-key changes remain restart-required.
+- Detached launcher mode leaves the child bot process running after wrapper exit.
+
+## 6. Research / Backtesting Boundary
+
+```text
+data-ingestion companion workflow
+              |
+              v
+      local OHLCV archive root
+              |
+              v
+    offline same-core research tools
+              |
+              v
+ baseline vs candidate evidence review
+              |
+              v
+       testnet -> shadow -> live
 ```
 
-## 2. Runtime Entry and Control
+Live runtime must not depend on the archive-refresh workflow.
 
-- `src/main_bot.py`
-- Parses CLI and loads config/strategy files.
-- Initializes logging, lockfile, and bot context.
-- Boots `BotRunner` and delegates lifecycle.
+## 7. Canonical Artifact Paths
 
-- `src/bot_runner.py`
-- Main iteration coordinator.
-- Handles periodic maintenance:
-  - metrics snapshot,
-  - balance snapshot,
-  - illiquid cleanup.
+| Artifact class | Canonical public-safe path |
+| --- | --- |
+| Human-maintained docs | `docs/` |
+| Mutable runtime state | `data/<env>/` |
+| Mutable metrics state | `data/metrics/<env>/` |
+| Runtime operational logs | `logs/<env>/<hostname>/{activity,trades,performance,metrics}.log` |
+| Root control logs | `logs/watchdog.log`, `logs/bot_launcher.log` |
+| Generated offline outputs | `data/out/<domain>/` |
+| Tracked benchmark references | `tools/benchmark/baselines/` |
 
-- `src/lifecycle/lifecycle_manager.py`
-- Startup/shutdown orchestration.
-- Runtime status synchronization.
+Generated artifacts do not belong in documentation paths by default.
 
-## 3. Trading Pipeline
+## 8. Related Guides
 
-Primary orchestrator: `src/trading/trading_executor.py`.
-
-Iteration flow:
-
-1. `market_fetch` phase (prices + balances).
-2. Reprice active positions.
-3. SELL checks.
-4. Optional post-sell balance refresh.
-5. BUY checks.
-6. Persistence.
-7. Decision summary + runtime KPI logging.
-
-Behavioral note: SELL pass runs before BUY pass.
-
-## 4. Strategy and Execution Layer
-
-- `src/trade_processor.py`
-- Entry checks, exit triggers, TP/SL handling.
-- Uses strategy-owned settings from `config/strategy*.json`.
-
-- `src/strategies/filter_manager/filter_manager.py`
-- Composes filter modules.
-
-- `src/strategies/filters/*`
-- `rsi_filter.py`
-- `sma_filter.py`
-- `atr_filter.py`
-- `volume_filter.py`
-
-- `src/api/*`
-- Exchange info and symbol filters.
-- Klines cache and market data retrieval.
-- Spot/Convert execution adapters.
-
-## 5. Portfolio Risk Layer
-
-- `src/risk/risk_manager.py`
-- Deterministic policy engine for BUY decisions.
-- Modes: `off`, `shadow`, `enforce`.
-- Supports:
-  - max open positions,
-  - max total exposure,
-  - near-SL guard,
-  - per-group limits,
-  - reduce-size decisions.
-
-- Risk config source: `config/config.json -> risk_manager`.
-
-## 6. Feature Flags (Rollout Controls)
-
-Canonical flags:
-
-- `freeze_dynamic_tp_sl`
-- `strict_min_notional_enforcement`
-- `use_closed_candles_for_signals`
-- `intelligent_illiquid_unlocking`
-
-Status note:
-- Flags exist in runtime contract.
-- Some paths are still compatibility/preview guarded.
-
-## 7. Data and Persistence Contracts
-
-- `data/{mainnet|testnet}/positions.json`
-- `data/{mainnet|testnet}/illiquid_positions.json`
-- `data/{mainnet|testnet}/heartbeat.json`
-- `data/{mainnet|testnet}/runtime_status.json`
-- `data/metrics/{mainnet|testnet}/*`
-
-Purpose:
-- Recover state between restarts.
-- Enable watchdog and Telegram monitoring even when bot process is down.
-
-## 8. Telegram Control Plane
-
-Watchdog process:
-
-- `scripts/monitoring/watchdog_monitor.py`
-- `scripts/monitoring/telegram_commands.py`
-
-UI layer:
-
-- `src/telegram_ui/commands.py`
-- `src/telegram_ui/command_handlers/*`
-- `src/telegram_ui/handlers/*`
-
-Core commands:
-
-- Process: `/start_bot`, `/stop_bot`, `/restart_bot`, `/check_bot`, `/reload_config`
-- Monitoring: `/status`, `/positions`, `/balance`, `/health`, `/performance`, `/report`, `/illiquid`
-
-## 9. Testing Surface
-
-Observed test inventory in private repo:
-
-- Test modules: `120`
-- Property test modules: `31`
-
-Coverage areas include:
-- risk manager contract,
-- feature-flag contract,
-- trading execution guards,
-- config validation,
-- Telegram and watchdog flows.
+- [Research / Backtesting](../research/backtesting.md)
+- [Testing](../testing/testing_guide.md)
+- [Logging and Artifacts](../operations/logging.md)
+- [Shared Scope](../../shared/docs_scope.md)

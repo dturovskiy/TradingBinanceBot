@@ -1,64 +1,70 @@
-# Guide de Test (FR)
+# Guide de Tests (FR)
 
-Mise a jour: 2026-02-28
+Mise à jour : 2026-05-30
 
-Guide du workflow de validation du runtime prive `BinaceBot`.
+## 1. Scope
 
-## 1. Prerequis
+Cette page décrit les workflows public-safe de validation de l'implémentation privée.
+Les nombres exacts de modules de tests ne sont volontairement pas figés dans les
+docs publiques, car ils changent fréquemment.
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
-```
+## 2. Validation Runtime
 
-## 2. Scripts principaux
-
-Validation rapide:
+Depuis la racine de l'implémentation privée :
 
 ```bash
 ./scripts/testing/run_tests_quick.sh
-```
-
-Validation complete:
-
-```bash
 ./scripts/testing/run_tests.sh
 ```
 
-## 3. Commandes directes
+Utiliser la validation rapide pendant les itérations et la suite complète avant
+merge ou rollout.
+
+## 3. Focus Areas
+
+Vérifier les tests et preuves pour :
+
+- dry-run : aucune exécution Spot ou Convert réelle ;
+- ordering SELL-before-BUY ;
+- ownership et precedence de configuration ;
+- modes risk manager et containment par symbole ;
+- hot reload config/strategy et limite restart pour les clés API ;
+- comportement du launcher détaché ;
+- chargement archive-root et parité same-core replay ;
+- routage des sorties générées sous `data/out/<domain>/`.
+
+## 4. Validation Research
+
+Pour les workflows research, utiliser une archive root locale :
 
 ```bash
-.venv/bin/python -m pytest tests/ -v
-.venv/bin/python -m pytest tests/test_risk_manager.py -v
-.venv/bin/python -m pytest tests/test_feature_flags_contract.py -v
-.venv/bin/python -m pytest tests/test_trading_executor_buy_guardrails.py -v
-.venv/bin/python -m mypy src --config-file config/.mypy.ini
+python tools/analysis/<research-tool>.py --archive-root <archive-root>
 ```
 
-## 4. Zones critiques
+Un résultat influençant le rollout doit être reproductible depuis une archive root
+stable et produire des preuves baseline-vs-candidate révisables.
 
-- Contrat risk manager.
-- Contrat feature flags.
-- Validation config.
-- Flux Telegram/watchdog.
-- Maintenance periodique de `BotRunner`.
+## 5. Validation Documentation
 
-## 5. Inventaire observe
+Depuis la racine du dépôt public de documentation :
 
-- Modules de test: `120`
-- Modules property tests: `31`
+```bash
+python3 scripts/docs/check_language_parity.py
+bash scripts/docs/validate_links.sh
+git diff --check
+```
 
-## 6. Artifacts
+## 6. Sorties Générées
 
-- `logs/quick_validation_*.log`
-- `logs/test_validation_*.log`
-- `tools/benchmark/*.json`
+Les sorties de validation générées doivent utiliser des chemins par domaine :
 
-## 7. Workflow recommande
+```text
+data/out/testing/
+data/out/benchmark/
+data/out/integration/
+data/out/readiness/
+data/out/audit/
+```
 
-1. Run rapide pendant dev.
-2. Tests cibles sur modules modifies.
-3. Run complet avant merge/release.
-4. Verification des logs et regressions.
+Ne pas placer de sortie générée sous `docs/`, sauf document public volontairement
+curaté et maintenu manuellement.
