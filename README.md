@@ -29,9 +29,14 @@ Public documentation-only repository for a private trading/runtime/research impl
 
 - [Scope](docs/shared/docs_scope.md)
 - [Sync Policy](docs/shared/docs_sync_policy.md)
+- [Style Guide](docs/shared/style_guide.md)
 - [Glossary](docs/shared/glossary.md)
 - [Public Sync Manifest](docs/shared/public_sync_manifest.md)
 - [Public Release Checklist](docs/shared/public_release_checklist.md)
+
+## Changelog
+
+- [CHANGELOG](CHANGELOG.md)
 
 ## Reviewed Sync Provenance
 

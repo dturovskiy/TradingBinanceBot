@@ -28,6 +28,8 @@ Cette carte décrit des domaines de responsabilité stables et adaptés à la do
 4. L’orchestration normale du trading ne se poursuit que lorsque l’état requis est cohérent.
 5. Exchange/API, risque, persistance et observabilité restent des domaines de responsabilité séparés.
 
+Il s’agit d’un ordre de responsabilité et de sécurité, et non d’une séquence exacte d’implémentation du démarrage.
+
 ## 4. État d’exécution durable / récupération
 
 L’exécution des ordres est distincte de la responsabilité de l’état durable. Un redémarrage peut nécessiter une réconciliation entre l’état externe de l’exchange et l’état géré localement. La récupération doit être déterministe et idempotente, tout état non résolu est traité en fail-closed, et la récupération n’autorise pas à elle seule le placement de nouveaux ordres.
@@ -36,9 +38,11 @@ Voir [Exécution / récupération](execution_recovery.md).
 
 ## 5. Limite recherche / replay
 
-Le replay utilise un temps d’événement explicite et doit, lorsque c’est pertinent, partager les sémantiques de domaine importantes avec l’exécution live. Les adaptateurs peuvent rester isolés, mais le replay ne doit pas contourner silencieusement des contrats importants du domaine live.
+Le replay utilise un temps d’événement explicite et doit, lorsque c’est pertinent, partager les sémantiques de domaine importantes avec l’exécution live. Les adaptateurs peuvent rester isolés, mais le replay ne doit pas contourner silencieusement des contrats importants du domaine live. La parité n’exige pas que les environnements offline et live soient identiques : leurs différences doivent être explicites et validées plutôt qu’accidentelles.
 
 Voir [Recherche / backtesting](../research/backtesting.md).
+
+Les concepts stables de propriété des artefacts et de configuration couvrent la documentation maintenue manuellement, l’état mutable du runtime ou de la télémétrie, les logs opérationnels, les sorties offline générées par la recherche ou les tests et les artefacts de référence suivis lorsqu’ils font partie d’un contrat développeur stable. Une sortie générée ne devient pas une documentation canonique par simple emplacement ou commodité.
 
 ## 6. Limites de publication sûre
 

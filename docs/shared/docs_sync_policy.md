@@ -6,7 +6,7 @@ Keep public documentation aligned with stable private behavior while preserving 
 
 ## Source of Truth
 
-The private implementation is the source of truth. Every public sync must record the exact reviewed private Git commit SHA and review date in `public_sync_manifest.md`.
+The private implementation is the source of truth. Every public sync must record the exact reviewed private Git commit SHA and review date in `public_sync_manifest.md`. A review date alone is not sufficient provenance for future syncs.
 
 ## Trigger Events
 
@@ -24,11 +24,21 @@ Review public docs after changes to:
 
 ## Mandatory Update Targets
 
-Review affected EN/UA/FR pages, shared governance docs, navigation, and `CHANGELOG.md`. Preserve language-path parity and the same factual/security boundary across languages.
+For each public-facing change, review as applicable:
+
+- affected EN pages;
+- semantically equivalent UA and FR pages;
+- affected shared governance docs;
+- `README.md` and `docs/index.md` when topic families or navigation change;
+- `docs/shared/glossary.md`;
+- `docs/shared/public_sync_manifest.md`;
+- `CHANGELOG.md`.
+
+Language variants must preserve the same factual claims, section hierarchy, navigation targets, and public-safety boundary.
 
 ## Public-Safety Filter
 
-Before publication, remove credentials, runtime state, logs, current strategies/candidates/rankings, production thresholds, infrastructure topology, exact recovery commands, unnecessary private hashes/evidence IDs, and implementation source excerpts.
+Before publication, remove credentials, runtime state, logs, current strategies/candidates/rankings, production thresholds, infrastructure topology, exact recovery commands, unnecessary private hashes/evidence IDs, and implementation source excerpts. Explicitly review the diff for machine-specific environment details, current operational/research state, and other transient private context.
 
 ## Verification Steps
 
@@ -36,8 +46,9 @@ Before publication, remove credentials, runtime state, logs, current strategies/
 2. Run the repository link validator when the execution policy permits it; otherwise run equivalent internal Markdown-link validation.
 3. Run `git diff --check`.
 4. Review changed-path scope and staged diff.
-5. Run the public-safety review.
+5. Confirm root/index navigation points to current public pages when structure changed.
+6. Run an explicit public-safety review for environment-specific detail and current private state.
 
 ## Ownership
 
-Documentation maintainers are responsible for source binding, factual parity, validation, and public-safety review before merge.
+Documentation maintainers are responsible for exact source binding, factual/language parity, validation, navigation consistency, and public-safety review before merge.

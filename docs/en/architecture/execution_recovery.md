@@ -8,9 +8,13 @@ Trading systems can observe externally executed state while also maintaining loc
 
 Exchange state and local managed state are distinct sources of information. A process restart, ambiguous response, or partial local update can require reconciliation before normal operation resumes.
 
+The exchange is authoritative for what it observed and executed, while local managed state carries accounting, risk, and lifecycle context. An in-memory response alone is not sufficient proof that both views agree; durable state retains enough intent/result context to support later reconciliation without treating a retry as a new trading decision.
+
 ## 3. Reconciliation Before Readiness
 
 Required unresolved execution state is reconciled before the normal trading readiness gate opens. If required consistency cannot be established, the system fails closed rather than assuming safe state.
+
+Unknown, conflicting, incomplete, or temporarily unavailable reconciliation evidence remains unresolved and keeps the affected readiness path closed.
 
 ## 4. Idempotent Restart Recovery
 
@@ -22,7 +26,7 @@ Recovery may inspect and reconcile existing execution state, but it does not its
 
 ## 6. Testing Expectations
 
-Public testing expectations include restart/recovery tests, persistence and atomic-write tests, ambiguity/failure-path tests, idempotency checks, reconciliation/readiness tests, and tests proving that recovery does not submit fresh orders.
+Public testing expectations include restart/recovery tests, persistence and atomic-write tests, ambiguity/failure-path tests, idempotency checks, reconciliation/readiness tests, and tests proving that recovery does not submit fresh orders. They should explicitly cover externally observed/local-state disagreement, incomplete or unavailable reconciliation evidence, and persistence failures.
 
 ## 7. Public-Safety Boundary
 

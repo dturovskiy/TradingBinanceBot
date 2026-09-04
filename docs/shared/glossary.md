@@ -1,20 +1,28 @@
 # Glossary
 
 - `TradingBinanceBot`: public documentation-only repository.
-- `Durable State`: locally persisted execution state intended to survive process restart.
+- `Bootstrap / Lifecycle`: ownership domain for process startup, shutdown, subsystem initialization, and readiness coordination.
+- `Trading Orchestration`: domain that sequences trading-cycle decision and execution work.
+- `Portfolio Risk`: portfolio-level risk policy and containment domain, separate from order-state recovery.
+- `Durable Execution State`: locally persisted execution intent/state used to reason safely across ambiguous outcomes or process restarts.
 - `Reconciliation`: comparison and resolution of externally observed exchange state with locally managed state.
 - `Restart Recovery`: deterministic process for resolving durable execution state before normal readiness.
 - `Idempotency`: property that allows a recovery or state-application step to be repeated without duplicating its effect.
 - `Readiness Gate`: condition that must be satisfied before normal trading activity resumes.
 - `Fail Closed`: block progression when required state or evidence remains unresolved.
-- `Event Time`: explicitly defined time associated with an observation/decision in replay or research.
+- `Event Time`: explicitly defined time associated with an observation or decision in replay or research.
 - `Deterministic Replay`: reproducible replay for the same inputs and contract versions.
 - `No-Future-Leakage`: rule preventing future observations/outcomes from influencing past decisions.
+- `Live / Replay Parity`: requirement that replay preserve material live-domain semantics while environment-specific differences remain explicit and validated.
 - `Dataset Identity`: deterministic identity binding a dataset to its intended contents/provenance.
-- `Provenance`: metadata describing the origin and role of data or evidence.
-- `Content-Bound Evidence`: evidence whose identity is deterministically tied to its contents.
+- `Provenance`: metadata describing the origin, role, and transformation context of data or evidence.
+- `Content-Bound Evidence`: evidence whose identity is deterministically tied to the content/contracts it represents.
 - `Independent Sample`: an observation counted as statistically independent under an explicit methodology rather than merely because it occupies a separate row.
+- `Time-Safe Split`: train/review/holdout methodology that prevents temporal leakage, including purge/embargo where required.
 - `Purge / Embargo`: time-safety techniques used to reduce leakage across train/review/holdout boundaries.
 - `One-Shot Holdout`: holdout semantics intended to prevent repeated tuning against the final evaluation set.
-- `Promotion Firewall`: separation between research evidence and authorization to advance toward deployment.
-- `Execution/Domain Parity`: validation that replay/research does not silently bypass material execution-domain contracts.
+- `Promotion Gate`: evidence checkpoint that must be satisfied before a candidate can advance toward deployment.
+- `Promotion Firewall`: separation between favorable research evidence and authorization to advance toward deployment; other integrity/parity/safety gates can still block progression.
+- `Execution/Domain Parity`: validation that replay/research does not silently bypass material execution, timing, risk, or state contracts.
+- `Artifact Ownership`: rule describing the canonical home and lifecycle of a document, state artifact, log, or generated output.
+- `Generated Offline Output`: non-runtime artifact produced by analysis, testing, or research tooling; it does not become canonical documentation by location or convenience.

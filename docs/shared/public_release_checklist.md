@@ -1,12 +1,18 @@
 # Public Documentation Release Checklist
 
+## Before Applying a Sync
+
+- Work on a clean non-`main` branch.
+- Record the exact reviewed private source commit and review date.
+- Review the intended changed-path set and source evidence before applying changes.
+- Confirm the planned patch is limited to public documentation and documentation-validation files.
+
 ## Before Commit
 
-- Work on a non-`main` branch.
 - Confirm the expected changed-path manifest.
 - Confirm new files are staged.
-- Record the exact reviewed private source commit.
 - Confirm no delete/rename occurred unless explicitly approved.
+- Confirm `README.md` and `docs/index.md` navigation is updated when topic families or paths changed.
 
 ## Validation
 
@@ -16,6 +22,8 @@ Run:
 python3 scripts/docs/check_language_parity.py
 bash scripts/docs/validate_links.sh
 git diff --check
+git status --short
+git diff --stat
 git diff --cached --stat
 ```
 
@@ -23,7 +31,7 @@ If Bash execution is blocked by the tool policy, run an equivalent internal Mark
 
 ## Public-Safety Review
 
-Confirm the staged patch contains no:
+Confirm the patch contains no:
 
 - credentials, secrets, tokens, or chat identifiers;
 - balances, positions, trade-ledger contents, or runtime logs;
@@ -34,7 +42,8 @@ Confirm the staged patch contains no:
 - exact production limits or thresholds;
 - exact operational recovery commands or incident procedures;
 - private implementation source when contract-level prose is sufficient;
-- private evidence identifiers/hashes unnecessary for documentation provenance.
+- private evidence identifiers/hashes unnecessary for documentation provenance;
+- transient machine/environment details or current operational/research state.
 
 The reviewed private Git commit SHA recorded in the sync manifest is an approved provenance identifier.
 
@@ -45,6 +54,12 @@ The reviewed private Git commit SHA recorded in the sync manifest is an approved
 - Corresponding pages keep the same security boundary and navigation targets.
 - `README.md` and `docs/index.md` link to all current public topic families.
 
+## After Applying the Sync
+
+- Review `git status --short` and the complete diff/stat for unintended scope expansion.
+- Confirm source provenance and navigation remain internally consistent.
+- Repeat the public-safety review against the final staged patch.
+
 ## Commit Gate
 
-Do not commit until validation, diff review, and public-safety review pass.
+Do not commit until validation, diff review, navigation review, and public-safety review pass.

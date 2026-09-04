@@ -6,7 +6,7 @@
 
 ## 2. Provenance
 
-Les preuves doivent identifier le rôle et l’origine des éléments de source, de décision et de résultat sans les confondre.
+Les preuves doivent identifier le rôle et l’origine des éléments de source, de décision et de résultat sans les confondre. La provenance ne doit pas être déduite uniquement des noms de fichiers, des timestamps ou des répertoires locaux.
 
 ## 3. Identité déterministe des artefacts
 
@@ -18,7 +18,7 @@ Les preuves utilisées pour la validation doivent être liées au contenu qu’e
 
 ## 5. Liaison du candidat et du jeu de données
 
-L’identité du candidat/de la configuration et l’identité du jeu de données sont conceptuellement distinctes et doivent être explicitement liées lorsqu’une évaluation dépend des deux.
+L’identité du candidat/de la configuration et l’identité du jeu de données sont conceptuellement distinctes et doivent être explicitement liées lorsqu’une évaluation dépend des deux. Si les liaisons requises du candidat, du jeu de données ou des preuves divergent, l’agrégation doit échouer en fail-closed plutôt que produire un résultat mélangé à la provenance ambiguë.
 
 ## 6. Classes de preuves
 
@@ -34,7 +34,7 @@ Les preuves qui étayent un avantage statistique ou de marché ne sont pas équi
 
 ## 9. Parité d’exécution / de domaine
 
-La parité execution/domain constitue une couche de validation distincte destinée à détecter les cas où le replay ou la recherche contourne une sémantique importante du runtime.
+La parité execution/domain constitue une couche de validation distincte destinée à détecter les cas où le replay ou la recherche contourne une sémantique importante du runtime. Elle couvre les sémantiques d’exécution, de temps, de risque et d’état pertinentes pour le chemin cible ; un résultat de recherche favorable peut toujours être bloqué si cette couche manque ou reste incohérente.
 
 ## 10. Limite de publication sûre
 

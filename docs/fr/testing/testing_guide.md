@@ -27,11 +27,11 @@ Lorsque c’est pertinent, la validation combine des contrôles statiques/de typ
 
 ## 4. Tests d’exécution / récupération
 
-Validez la persistance de l’état durable, la réconciliation après redémarrage, la récupération idempotente, le traitement fail-closed des états non résolus, le gate de disponibilité et l’invariant selon lequel la récupération ne soumet pas de nouveaux ordres.
+Validez la persistance de l’état durable, la réconciliation après redémarrage, la récupération idempotente, le traitement fail-closed des états non résolus, le gate de disponibilité et l’invariant selon lequel la récupération ne soumet pas de nouveaux ordres. Exercez explicitement les divergences entre état externe et local, les preuves de réconciliation incomplètes ou indisponibles, les échecs de persistance et les tentatives répétées de récupération.
 
 ## 5. Tests de recherche / replay
 
-Validez la sémantique de l’event time, l’absence de fuite d’informations futures, le replay déterministe, les découpages respectant le temps, la liaison du jeu de données et de la provenance, le traitement des échantillons indépendants et la parité execution/domain.
+Validez la sémantique de l’event time, l’absence de fuite d’informations futures, le replay déterministe, les découpages respectant le temps, la liaison du jeu de données et de la provenance, le traitement des échantillons indépendants et la parité execution/domain. Un test méthodologique peut valider ces contrats sans affirmer qu’un candidat ou un gate actuel réussit.
 
 ## 6. Validation de la documentation
 
@@ -44,6 +44,8 @@ git diff --check
 ```
 
 Lorsque l’exécution Bash est bloquée par la politique des outils, effectuez une validation interne équivalente des liens Markdown et consignez cette limitation.
+
+La revue documentaire vérifie aussi la présence des fichiers de gouvernance partagés obligatoires, la parité de navigation/des liens et l’absence de détails d’implémentation privée ou d’état opérationnel/de recherche courant.
 
 ## 7. Limite de publication sûre
 

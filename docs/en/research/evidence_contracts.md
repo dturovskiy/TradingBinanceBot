@@ -6,7 +6,7 @@
 
 ## 2. Provenance
 
-Evidence should identify the role and origin of source, decision, and outcome material without conflating them.
+Evidence should identify the role and origin of source, decision, and outcome material without conflating them. Provenance should not be inferred only from filenames, timestamps, or local directories.
 
 ## 3. Deterministic Artifact Identity
 
@@ -18,7 +18,7 @@ Evidence used for validation should be bound to the content it represents. Mutat
 
 ## 5. Candidate and Dataset Binding
 
-Candidate/configuration identity and dataset identity are conceptually distinct and should be explicitly bound when an evaluation depends on both.
+Candidate/configuration identity and dataset identity are conceptually distinct and should be explicitly bound when an evaluation depends on both. If required candidate, dataset, or evidence bindings disagree, aggregation must fail closed rather than produce a blended result with ambiguous provenance.
 
 ## 6. Evidence Classes
 
@@ -34,7 +34,7 @@ Evidence that supports a statistical/market edge is not equivalent to evidence r
 
 ## 9. Execution / Domain Parity
 
-Execution/domain parity is a separate validation layer intended to catch cases where replay or research bypasses material runtime semantics.
+Execution/domain parity is a separate validation layer intended to catch cases where replay or research bypasses material runtime semantics. It covers execution, timing, risk, and state semantics relevant to the target path; a favorable research result can still be blocked when this layer is missing or inconsistent.
 
 ## 10. Public-Safety Boundary
 

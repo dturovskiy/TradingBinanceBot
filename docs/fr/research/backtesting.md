@@ -6,7 +6,7 @@ La recherche et le replay doivent produire des preuves reproductibles et sûres 
 
 ## 2. Sémantique du temps d’événement
 
-Les décisions reposent sur un event time explicitement défini. Les données qui n’étaient pas disponibles au moment de la décision ne doivent pas influencer cette décision.
+Les décisions reposent sur un event time explicitement défini. Les données qui n’étaient pas disponibles au moment de la décision ne doivent pas influencer cette décision. Le temps d’observation, le temps de décision et le temps du résultat peuvent représenter des concepts différents et ne doivent pas être silencieusement ramenés à un seul timestamp.
 
 ## 3. Replay déterministe
 
@@ -18,7 +18,7 @@ Les entrées disponibles au moment de la décision sont séparées des données 
 
 ## 5. Parité live / replay
 
-Les sémantiques communes doivent être réutilisées lorsque c’est pertinent. Les adaptateurs peuvent rester isolés, mais le replay ne doit pas contourner silencieusement des contrats importants d’exécution live, de risque ou de validation.
+Les sémantiques communes doivent être réutilisées lorsque c’est pertinent. Les adaptateurs peuvent rester isolés, mais le replay ne doit pas contourner silencieusement des contrats importants d’exécution live, de risque ou de validation. La parité n’exige pas des environnements identiques : les différences doivent être explicites et validées plutôt qu’accidentelles.
 
 ## 6. Identité et provenance des jeux de données
 
@@ -26,7 +26,7 @@ La provenance de la source, de la décision et du résultat correspond à des co
 
 ## 7. Sémantique des échantillons indépendants
 
-Les lignes, horizons ou observations répétées ne constituent pas automatiquement des échantillons indépendants. L’indépendance doit découler d’une méthodologie explicite adaptée aux preuves considérées.
+Les lignes, horizons ou observations répétées ne constituent pas automatiquement des échantillons indépendants. Des lignes dupliquées, des horizons qui se chevauchent ou plusieurs représentations du même événement sous-jacent peuvent constituer des preuves corrélées ou aliasées plutôt qu’un support indépendant. L’indépendance doit découler d’une méthodologie explicite adaptée aux preuves considérées.
 
 ## 8. Méthodologie de découpage respectant le temps
 
@@ -38,7 +38,7 @@ Les preuves issues de la recherche n’autorisent pas à elles seules un rollout
 
 ## 10. Limite de publication sûre
 
-Ne publiez pas les noms actuels de candidats, les résultats actuels de stratégies, les hashes privés de jeux de données, l’état courant PASS/FAIL d’un gate ni l’état opérationnel du rollout.
+Ne publiez pas les noms actuels de candidats, les résultats actuels de stratégies, les hashes privés de jeux de données, l’état courant PASS/FAIL d’un gate ni l’état opérationnel du rollout. Les sorties de recherche générées appartiennent à l’espace d’artefacts géré de l’implémentation privée, et non à ce dépôt public de documentation.
 
 ## 11. Guides associés
 

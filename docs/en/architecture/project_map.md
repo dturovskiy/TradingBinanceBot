@@ -28,6 +28,8 @@ This map describes stable public-safe ownership domains, not the full private so
 4. Normal trading orchestration proceeds only when required state is consistent.
 5. Exchange/API, risk, persistence, and observability remain separate ownership domains.
 
+This is ownership and safety ordering, not an exact startup implementation sequence.
+
 ## 4. Durable Execution State / Recovery
 
 Order execution is separate from durable state ownership. A restart can require reconciliation between external exchange state and locally managed state. Recovery must be deterministic and idempotent, unresolved state fails closed, and recovery itself does not authorize fresh order placement.
@@ -36,9 +38,11 @@ See [Execution / Recovery](execution_recovery.md).
 
 ## 5. Research / Replay Boundary
 
-Replay uses explicit event time and should share material domain semantics with live execution where appropriate. Adapters may remain isolated, but replay must not silently bypass important live-domain contracts.
+Replay uses explicit event time and should share material domain semantics with live execution where appropriate. Adapters may remain isolated, but replay must not silently bypass important live-domain contracts. Parity does not require identical offline and live environments; differences must be explicit and validated rather than accidental.
 
 See [Research / Backtesting](../research/backtesting.md).
+
+Stable artifact/configuration concepts include human-maintained documentation, mutable runtime or telemetry state, operational logs, generated offline research/testing outputs, and tracked reference artifacts when they are part of a stable developer contract. Generated outputs do not become canonical documentation by location or convenience.
 
 ## 6. Public-Safety Limits
 

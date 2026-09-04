@@ -6,7 +6,7 @@ Research and replay should produce reproducible, time-safe evidence without beco
 
 ## 2. Event-Time Semantics
 
-Decisions operate on explicitly defined event time. Data that was not available at decision time must not influence that decision.
+Decisions operate on explicitly defined event time. Data that was not available at decision time must not influence that decision. Observation time, decision time, and outcome time can represent different concepts and must not be silently collapsed into one timestamp.
 
 ## 3. Deterministic Replay
 
@@ -18,7 +18,7 @@ Decision-time inputs are separated from later observation/outcome data. Future o
 
 ## 5. Live / Replay Parity
 
-Shared semantics should be reused where appropriate. Adapters may stay isolated, but replay must not silently bypass material live-domain execution, risk, or validation contracts.
+Shared semantics should be reused where appropriate. Adapters may stay isolated, but replay must not silently bypass material live-domain execution, risk, or validation contracts. Parity does not require identical environments; differences must be explicit and validated rather than accidental.
 
 ## 6. Dataset Identity and Provenance
 
@@ -26,7 +26,7 @@ Source provenance, decision provenance, and outcome provenance are distinct conc
 
 ## 7. Independent-Sample Semantics
 
-Rows, horizons, or repeated observations are not automatically independent samples. Independence must follow an explicit methodology appropriate to the evidence.
+Rows, horizons, or repeated observations are not automatically independent samples. Duplicate rows, overlapping horizons, or multiple representations of the same underlying event can represent correlated or aliased evidence rather than independent support. Independence must follow an explicit methodology appropriate to the evidence.
 
 ## 8. Time-Safe Split Methodology
 
@@ -38,7 +38,7 @@ Research evidence alone does not authorize rollout. Separate dataset-integrity, 
 
 ## 10. Public-Safety Boundary
 
-Do not publish current candidate names, current strategy results, private dataset hashes, current gate PASS/FAIL state, or operational rollout state.
+Do not publish current candidate names, current strategy results, private dataset hashes, current gate PASS/FAIL state, or operational rollout state. Generated research outputs belong in managed implementation artifact space rather than this public documentation repository.
 
 ## 11. Related Guides
 
