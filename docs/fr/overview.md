@@ -1,88 +1,46 @@
-# Documentation Binance Trading Bot (FR)
+# Documentation Trading Runtime et Research (FR)
 
-Documentation publique sécurisée pour une implémentation privée de trading bot.
+## 1. Limite du Dépôt
 
-## 1. Limite des dépôts
+`TradingBinanceBot` documente une plateforme privée trading/runtime/research avec des domaines séparés execution, risk, recovery, replay, evidence et observability. Ce n'est pas un miroir du code source.
 
-`TradingBinanceBot` publie les contrats stables destinés aux opérateurs. Le code
-runtime, les identifiants, l'état de production et les preuves internes restent privés.
+## 2. Structure Runtime
 
-Snapshot public-safe :
+L'ownership public stable est séparé entre bootstrap/lifecycle, mutable runtime state, trading orchestration, durable execution state/recovery, exchange/API access, portfolio risk, monitoring/observability, operator control, persistence/configuration, backtesting/replay et research/evidence.
 
-- date de revue public-safe : `2026-05-26`;
-- date de synchronisation documentaire : `2026-05-30`.
+## 3. Execution et Recovery
 
-## 2. Structure runtime
+Le durable execution state peut exiger une reconciliation avant la normal trading readiness. Le recovery est deterministic/idempotent, l'état non résolu fail closed, et le recovery n'autorise pas à lui seul de nouveaux ordres.
 
-- Entrypoint fin et bootstrap CLI.
-- Boucle runtime de haut niveau détenue par `BotRunner`.
-- Orchestration de chaque itération détenue par `TradingExecutor`.
-- Décisions et exécution par symbole détenues par `TradeProcessor`.
-- Sémantique de risque portefeuille détenue par `RiskManager`.
-- Monitoring, observability, métriques, reporting, livraison Telegram et surfaces
-  de contrôle locales sont des domaines distincts.
+Lire : [Execution / Recovery](architecture/execution_recovery.md).
 
-## 3. Invariant du cycle de trading
+## 4. Research et Evidence
 
-Chaque itération prépare le contexte marché/positions, traite les vérifications SELL,
-rafraîchit les balances si nécessaire, puis traite les candidats BUY.
+La recherche utilise explicit event-time semantics, deterministic replay, no-future-leakage, dataset/provenance identity, time-safe splits et promotion evidence séparée de l'autorisation de rollout.
 
-Invariant clé : **SELL est traité avant BUY** afin de réduire les conflits de stale balance.
+Lire : [Research / Backtesting](research/backtesting.md) et [Evidence Contracts](research/evidence_contracts.md).
 
-## 4. Ownership de configuration
+## 5. Testing
 
-- `config/config.json` : paramètres runtime opérationnels — cadence, retry,
-  telemetry, notifications et mode risk manager.
-- `config/strategy*.json` : logique de trading — TP/SL, indicateurs, targets
-  et overrides d'actifs pris en charge.
-- Les clés détenues par la stratégie ne retombent pas sur la configuration opérationnelle.
-- Override TA global minimal : `settings.enable_ta_confirmation`.
+Les tests couvrent unit, integration, property-based, parametrized regression, contract, persistence/atomic-write, order-state/recovery, failure-path/network resilience, replay/parity, research/provenance, observability, risk/API/execution et documentation validation.
 
-## 5. Sécurité d'exécution
+## 6. Provenance
 
-- `--dry-run` simule l'exécution sans placer d'ordres réels.
-- Les lectures market-data et balances restent disponibles pour la validation.
-- Les chemins Convert sont réservés au mainnet et ne doivent pas s'exécuter en dry-run.
-- Les erreurs par symbole doivent suspendre ou ignorer le symbole concerné ;
-  l'arrêt global est réservé aux problèmes de credentials.
-- Les fichiers runtime config et strategy supportent un hot reload contrôlé ;
-  les changements de clés API exigent un redémarrage.
-- En mode launcher détaché, le wrapper se termine après le démarrage réussi du
-  processus enfant, tandis que le bot continue de fonctionner.
+- Date de revue : `2026-09-04`.
+- Commit source privé revu : `05a4214895111bcdbb7960223b4af232c066c48c`.
+- Synchronisation publique précédente : `2026-05-30`.
+- Statut actuel : prepared for review, not yet merged.
 
-## 6. Same-Core Research et Backtesting
-
-La recherche historique reste séparée du live trading :
-
-1. Rafraîchir une archive OHLCV locale via un workflow companion d'ingestion.
-2. Passer l'archive root aux outils offline de recherche.
-3. Lancer replay same-core, évaluation enabled-universe, ranking et sweeps ciblés.
-4. Comparer les artifacts baseline et candidate.
-5. Promouvoir uniquement après revue des preuves vers testnet, shadow, puis live.
-
-Lire : [Research / Backtesting](research/backtesting.md).
-
-## 7. Limites des artifacts
-
-- État runtime mutable : `data/<env>/`.
-- État métriques mutable : `data/metrics/<env>/`.
-- Logs runtime : `logs/<env>/<hostname>/`.
-- Logs de contrôle racine : `logs/watchdog.log`, `logs/bot_launcher.log`.
-- Sorties offline générées : `data/out/<domain>/`.
-- Documentation maintenue manuellement : `docs/`.
-
-## 8. Index documentaire
+## 7. Index de Documentation
 
 - [Architecture](architecture/project_map.md)
+- [Execution / Recovery](architecture/execution_recovery.md)
 - [Research / Backtesting](research/backtesting.md)
-- [Tests](testing/testing_guide.md)
-- [Logs et artifacts](operations/logging.md)
-- [Shared Scope](../shared/docs_scope.md)
+- [Evidence Contracts](research/evidence_contracts.md)
+- [Testing](testing/testing_guide.md)
+- [Logging and Artifacts](operations/logging.md)
 - [Public Sync Manifest](../shared/public_sync_manifest.md)
 
-## 9. Notes de sécurité
+## 8. Public-Safety Boundary
 
-- Commencer par testnet et dry-run.
-- Ne jamais activer withdrawals pour les clés API de trading.
-- Vérifier les limites de risque avant tout rollout mainnet.
-- Ne pas publier l'état runtime, les archives de données ou les preuves internes.
+Ne pas publier private source, runtime/trading state, current strategies/candidates/rankings, production thresholds, infrastructure topology, exact recovery commands ou private operational evidence.
