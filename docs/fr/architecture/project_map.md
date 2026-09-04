@@ -15,6 +15,7 @@ Cette carte décrit des domaines de responsabilité stables et adaptés à la do
 | Exchange / API | Lecture de l’état externe de l’exchange et adaptateurs orientés ordres |
 | Risque de portefeuille | Politique de risque layered/grouped au niveau du portefeuille, séparation reason/model et confinement fail-safe |
 | Monitoring / observabilité | Santé, métriques, télémétrie et rapports |
+| Fiabilité / gestion des défaillances | Bounded failure handling, secret-safe diagnostics, fail-safe containment |
 | Contrôle opérateur | Notifications et contrôles destinés à l’opérateur |
 | Persistance / configuration | Responsabilité de la persistance du runtime et de la configuration |
 | Backtesting / replay | Replay en temps d’événement et méthodologie de parité d’exécution |
@@ -26,7 +27,7 @@ Cette carte décrit des domaines de responsabilité stables et adaptés à la do
 2. L’état persisté et l’état mutable sont chargés.
 3. La réconciliation requise de l’état d’exécution s’effectue avant la disponibilité normale.
 4. L’orchestration normale du trading ne se poursuit que lorsque l’état requis est cohérent.
-5. Exchange/API, risque, persistance et observabilité restent des domaines de responsabilité séparés.
+5. Exchange/API, risque, persistance, observabilité et fiabilité restent des domaines de responsabilité séparés.
 
 Il s’agit d’un ordre de responsabilité et de sécurité, et non d’une séquence exacte d’implémentation du démarrage.
 
@@ -52,7 +53,10 @@ Cette page ne publie ni les noms ou formats exacts des journaux, ni l’ordre de
 
 ## 7. Guides associés
 
+- [Référence des familles de modules](module_reference.md)
 - [Exécution / récupération](execution_recovery.md)
+- [Fiabilité](../operations/reliability.md)
+- [Contrôle opérateur](../operations/operator_control.md)
 - [Recherche / backtesting](../research/backtesting.md)
 - [Contrats de preuve](../research/evidence_contracts.md)
 - [Tests](../testing/testing_guide.md)

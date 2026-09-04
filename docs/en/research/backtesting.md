@@ -45,4 +45,7 @@ Do not publish current candidate names, current strategy results, private datase
 ## 11. Related Guides
 
 - [Evidence Contracts](evidence_contracts.md)
+- [Microstructure Research](microstructure.md)
+- [Options / Dataset Builds](options_data.md)
+- [Data-Source Contracts](data_sources.md)
 - [Testing](../testing/testing_guide.md)

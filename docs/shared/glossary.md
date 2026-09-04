@@ -24,5 +24,13 @@
 - `Promotion Gate`: evidence checkpoint that must be satisfied before a candidate can advance toward deployment.
 - `Promotion Firewall`: separation between favorable research evidence and authorization to advance toward deployment; other integrity/parity/safety gates can still block progression.
 - `Execution/Domain Parity`: validation that replay/research does not silently bypass material execution, timing, risk, or state contracts.
+- `Reliability Contract`: public-safe rules for bounded failure handling, fail-safe containment, secret-safe diagnostics, and recovery boundaries without infrastructure detail.
+- `Operator Control`: authorized notification/control surface that remains subject to access control and cannot bypass runtime safety gates.
+- `Microstructure Evidence`: research evidence about spread, depth, executable-price realism, or related market-state context, separate from order authorization.
+- `Executable Price`: research abstraction for a price that reflects execution constraints rather than a simplistic reference-price assumption.
+- `Preregistration`: defining a research/dataset role or acceptance condition before final outcome inspection so it is not silently reused as a tuning surface.
+- `Dataset Build`: reproducible, provenance-bound offline process that constructs a research dataset under explicit acceptance controls.
+- `Data-Source Contract`: methodology for source identity, availability time, transformation provenance, and acceptance without exposing provider credentials or private endpoints.
+- `Semantic Parity Key`: non-rendered documentation marker identifying a material cross-language claim/safety boundary for parity validation.
 - `Artifact Ownership`: rule describing the canonical home and lifecycle of a document, state artifact, log, or generated output.
 - `Generated Offline Output`: non-runtime artifact produced by analysis, testing, or research tooling; it does not become canonical documentation by location or convenience.

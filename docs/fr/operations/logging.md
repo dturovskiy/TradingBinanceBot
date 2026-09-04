@@ -89,6 +89,8 @@ tail -f logs/bot_launcher.log
 
 ## 10. Guides Associés
 
+- [Fiabilité](reliability.md)
+- [Contrôle opérateur](operator_control.md)
 - [Project Map](../architecture/project_map.md)
 - [Research / Backtesting](../research/backtesting.md)
 - [Evidence Contracts](../research/evidence_contracts.md)
