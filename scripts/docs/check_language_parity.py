@@ -1,47 +1,54 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
-
-REQUIRED = {
+LANGS = ("en", "ua", "fr")
+REQUIRED = (
     "overview.md",
     "architecture/project_map.md",
+    "architecture/execution_recovery.md",
     "research/backtesting.md",
+    "research/evidence_contracts.md",
     "testing/testing_guide.md",
     "operations/logging.md",
-}
+)
 
-SHARED_REQUIRED = {
-    "docs_scope.md",
-    "docs_sync_policy.md",
-    "style_guide.md",
-    "glossary.md",
-    "public_sync_manifest.md",
-    "public_release_checklist.md",
-}
+def headings(path: Path) -> list[int]:
+    return [len(m.group(1)) for line in path.read_text(encoding="utf-8").splitlines()
+            if (m := re.match(r"^(#{1,6})\s+", line))]
 
-languages = ["en", "ua", "fr"]
-missing: list[str] = []
+def links(path: Path) -> list[str]:
+    text = path.read_text(encoding="utf-8")
+    return [m.group(1) for m in re.finditer(r"\[[^\]]+\]\(([^)]+)\)", text)
+            if not m.group(1).startswith(("http://","https://","mailto:","tel:","#"))]
 
-for lang in languages:
-    for rel in REQUIRED:
-        path = DOCS / lang / rel
-        if not path.exists():
-            missing.append(f"{lang}: {rel}")
+errors=[]
+for rel in REQUIRED:
+    paths=[DOCS/lang/rel for lang in LANGS]
+    for p in paths:
+        if not p.exists():
+            errors.append(f"missing: {p.relative_to(ROOT)}")
+    if all(p.exists() for p in paths):
+        hs=[headings(p) for p in paths]
+        if not (hs[0]==hs[1]==hs[2]):
+            errors.append(f"heading hierarchy mismatch: {rel}")
+        ls=[links(p) for p in paths]
+        if not (ls[0]==ls[1]==ls[2]):
+            errors.append(f"cross-language link target mismatch: {rel}")
 
-for rel in SHARED_REQUIRED:
-    path = DOCS / "shared" / rel
-    if not path.exists():
-        missing.append(f"shared: {rel}")
+for path in ROOT.rglob("*.md"):
+    for target in links(path):
+        clean=target.split("#",1)[0].split("?",1)[0]
+        if clean and not (path.parent/clean).exists():
+            errors.append(f"broken link: {path.relative_to(ROOT)} -> {target}")
 
-if missing:
-    print("language parity check failed:")
-    for item in sorted(missing):
-        print(f"- missing {item}")
+if errors:
+    print("language parity validation failed:")
+    for e in errors:
+        print(f"- {e}")
     sys.exit(1)
-
-print("ok: language parity satisfied (en/ua/fr + shared docs)")
+print("ok: required paths + heading hierarchy + link targets + internal markdown links")

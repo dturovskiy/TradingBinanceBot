@@ -1,51 +1,41 @@
 # Гайд з Тестування (UA)
 
-Оновлено: 2026-05-30
-
 ## 1. Scope
 
-Ця сторінка описує public-safe validation workflows приватної реалізації.
-Точні лічильники test modules навмисно не фіксуються у публічній документації,
-оскільки вони часто змінюються.
+Public documentation intentionally does not freeze an exact test count; collection size changes over time.
 
-## 2. Runtime Validation
+## 2. Testing Taxonomy
 
-Із кореня приватної реалізації:
+Current public-safe categories include:
 
-```bash
-./scripts/testing/run_tests_quick.sh
-./scripts/testing/run_tests.sh
-```
+- unit tests;
+- integration tests;
+- property-based tests / Hypothesis;
+- parametrized regression tests;
+- contract tests;
+- persistence / atomic-write tests;
+- order-state / recovery tests;
+- failure-path / network resilience tests;
+- replay / parity tests;
+- research / provenance tests;
+- observability tests;
+- risk / API / execution tests.
 
-Використовуйте quick validation під час ітерацій і full suite перед merge або rollout.
+## 3. Validation Pipeline Categories
 
-## 3. Focus Areas
+Where applicable, validation combines static/type checks, configuration/fail-safe checks, pytest, and benchmark/performance checks. Public docs do not claim a current enforced coverage percentage unless separately reverified.
 
-Перевіряйте tests та evidence для:
+## 4. Execution / Recovery Testing
 
-- dry-run: відсутність реального Spot або Convert execution;
-- SELL-before-BUY ordering;
-- config ownership і precedence;
-- режимів risk manager та symbol-level containment;
-- config/strategy hot reload і restart boundary для API keys;
-- detached launcher behavior;
-- archive-root loading і same-core replay parity;
-- маршрутизації generated outputs до `data/out/<domain>/`.
+Validate durable-state persistence, restart reconciliation, idempotent recovery, fail-closed unresolved state, readiness gating, and the invariant that recovery does not submit fresh orders.
 
-## 4. Research Validation
+## 5. Research / Replay Testing
 
-Для research workflows використовуйте локальний archive root:
+Validate event-time semantics, no-future-leakage, deterministic replay, time-safe splits, dataset/provenance binding, independent-sample handling, and execution/domain parity.
 
-```bash
-python tools/analysis/<research-tool>.py --archive-root <archive-root>
-```
+## 6. Documentation Validation
 
-Результат, який впливає на rollout, має бути відтворюваним зі стабільного archive root
-і формувати reviewable baseline-vs-candidate evidence.
-
-## 5. Documentation Validation
-
-Із кореня публічного документаційного репозиторію:
+Run:
 
 ```bash
 python3 scripts/docs/check_language_parity.py
@@ -53,17 +43,8 @@ bash scripts/docs/validate_links.sh
 git diff --check
 ```
 
-## 6. Generated Outputs
+When Bash execution is blocked by tool policy, run equivalent internal Markdown-link validation and record that limitation.
 
-Generated validation outputs мають використовувати domain-specific paths:
+## 7. Public-Safety Boundary
 
-```text
-data/out/testing/
-data/out/benchmark/
-data/out/integration/
-data/out/readiness/
-data/out/audit/
-```
-
-Не розміщуйте generated output у `docs/`, якщо це не навмисно підготовлений
-human-maintained public document.
+Generated test/research evidence, private paths, current strategy/candidate results, and operational runtime artifacts are not published here.

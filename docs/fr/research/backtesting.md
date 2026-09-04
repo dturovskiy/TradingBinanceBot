@@ -1,69 +1,46 @@
-# Guide Research et Backtesting (FR)
+# Méthodologie Research et Backtesting (FR)
 
-## 1. Objectif
+## 1. Purpose
 
-La recherche historique utilise la même sémantique de trading que le runtime,
-tout en séparant data ingestion et live execution.
+Research and replay should produce reproducible, time-safe evidence without becoming a second uncontrolled trading implementation.
 
-## 2. Répartition des Responsabilités
+## 2. Event-Time Semantics
 
-| Couche | Responsabilité |
-| --- | --- |
-| Workflow companion de data-ingestion | Récupérer les données OHLCV publiques et écrire des fichiers normalisés |
-| Archive root locale | Stocker des entrées historiques reproductibles |
-| Outils offline de recherche | Replay, évaluation, ranking, sweeps et artifacts de preuve |
-| Live runtime | Exécuter testnet/mainnet indépendamment du rafraîchissement d'archive |
+Decisions operate on explicitly defined event time. Data that was not available at decision time must not influence that decision.
 
-Le workflow d'ingestion ne fait pas partie de la boucle live et ne prend pas de
-décisions de trading.
+## 3. Deterministic Replay
 
-## 3. Contrat Canonique de l'Archive
+The same inputs, contract versions, and deterministic configuration should produce reproducible replay outputs.
 
-```text
-<archive-root>/
-  klines_15m/<SYMBOL>_15m.csv
-  klines_1h/<SYMBOL>_1h.csv
-  klines_4h/<SYMBOL>_4h.csv
-  summary_metrics.csv
-```
+## 4. No-Future-Leakage
 
-Les champs OHLCV attendus incluent timestamps, open, high, low, close et volume.
+Decision-time inputs are separated from later observation/outcome data. Future outcomes must not leak into earlier feature construction, ranking, or decisions.
 
-## 4. Workflow Opérateur
+## 5. Live / Replay Parity
 
-1. Rafraîchir une archive locale avec le workflow companion d'ingestion.
-2. Lancer un replay smoke check étroit avec l'archive root.
-3. Lancer une évaluation enabled-universe same-core.
-4. Produire ranking et sweeps ciblés symbole/candidate.
-5. Comparer les artifacts baseline et candidate.
-6. Enregistrer un verdict fondé sur les preuves.
-7. Promouvoir uniquement via les gates testnet, shadow et live.
+Shared semantics should be reused where appropriate. Adapters may stay isolated, but replay must not silently bypass material live-domain execution, risk, or validation contracts.
 
-Utiliser des placeholders dans les docs publiques :
+## 6. Dataset Identity and Provenance
 
-```bash
-python tools/analysis/<research-tool>.py --archive-root <archive-root>
-```
+Source provenance, decision provenance, and outcome provenance are distinct concepts. Deterministic identities/content binding reduce accidental dataset or evidence mixing.
 
-## 5. Règle de Reproductibilité
+## 7. Independent-Sample Semantics
 
-Tout run influençant une décision de stratégie ou de rollout doit utiliser une
-archive root locale plutôt qu'un fetch réseau ad-hoc. Les vérifications public-fetch
-étroites sont acceptables uniquement pour smoke validation ou debug temporaire.
+Rows, horizons, or repeated observations are not automatically independent samples. Independence must follow an explicit methodology appropriate to the evidence.
 
-## 6. Règle des Artifacts
+## 8. Time-Safe Split Methodology
 
-Les sorties générées de recherche appartiennent à :
+Use explicit train/review/holdout boundaries. Apply purge/embargo where required to prevent boundary leakage. A one-shot holdout is not a tuning surface.
 
-```text
-data/out/<domain>/
-```
+## 9. Promotion Firewall
 
-Ne pas committer archives, rapports, rankings ou chemins propres au workstation
-dans ce dépôt public de documentation.
+Research evidence alone does not authorize rollout. Separate dataset-integrity, execution/domain-parity, and other required validation layers can block promotion.
 
-## 7. Règle d'Interface
+## 10. Public-Safety Boundary
 
-Une UI ou TUI locale peut orchestrer refresh archive, research runs, affichage
-des artifacts et candidate promotion. Elle doit rester un thin wrapper et ne pas
-implémenter un second moteur de trading/backtesting.
+Do not publish current candidate names, current strategy results, private dataset hashes, current gate PASS/FAIL state, or operational rollout state.
+
+## 11. Related Guides
+
+- [Evidence Contracts](evidence_contracts.md)
+- [Testing](../testing/testing_guide.md)

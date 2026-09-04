@@ -1,52 +1,41 @@
 # Guide de Tests (FR)
 
-Mise à jour : 2026-05-30
-
 ## 1. Scope
 
-Cette page décrit les workflows public-safe de validation de l'implémentation privée.
-Les nombres exacts de modules de tests ne sont volontairement pas figés dans les
-docs publiques, car ils changent fréquemment.
+Public documentation intentionally does not freeze an exact test count; collection size changes over time.
 
-## 2. Validation Runtime
+## 2. Testing Taxonomy
 
-Depuis la racine de l'implémentation privée :
+Current public-safe categories include:
 
-```bash
-./scripts/testing/run_tests_quick.sh
-./scripts/testing/run_tests.sh
-```
+- unit tests;
+- integration tests;
+- property-based tests / Hypothesis;
+- parametrized regression tests;
+- contract tests;
+- persistence / atomic-write tests;
+- order-state / recovery tests;
+- failure-path / network resilience tests;
+- replay / parity tests;
+- research / provenance tests;
+- observability tests;
+- risk / API / execution tests.
 
-Utiliser la validation rapide pendant les itérations et la suite complète avant
-merge ou rollout.
+## 3. Validation Pipeline Categories
 
-## 3. Focus Areas
+Where applicable, validation combines static/type checks, configuration/fail-safe checks, pytest, and benchmark/performance checks. Public docs do not claim a current enforced coverage percentage unless separately reverified.
 
-Vérifier les tests et preuves pour :
+## 4. Execution / Recovery Testing
 
-- dry-run : aucune exécution Spot ou Convert réelle ;
-- ordering SELL-before-BUY ;
-- ownership et precedence de configuration ;
-- modes risk manager et containment par symbole ;
-- hot reload config/strategy et limite restart pour les clés API ;
-- comportement du launcher détaché ;
-- chargement archive-root et parité same-core replay ;
-- routage des sorties générées sous `data/out/<domain>/`.
+Validate durable-state persistence, restart reconciliation, idempotent recovery, fail-closed unresolved state, readiness gating, and the invariant that recovery does not submit fresh orders.
 
-## 4. Validation Research
+## 5. Research / Replay Testing
 
-Pour les workflows research, utiliser une archive root locale :
+Validate event-time semantics, no-future-leakage, deterministic replay, time-safe splits, dataset/provenance binding, independent-sample handling, and execution/domain parity.
 
-```bash
-python tools/analysis/<research-tool>.py --archive-root <archive-root>
-```
+## 6. Documentation Validation
 
-Un résultat influençant le rollout doit être reproductible depuis une archive root
-stable et produire des preuves baseline-vs-candidate révisables.
-
-## 5. Validation Documentation
-
-Depuis la racine du dépôt public de documentation :
+Run:
 
 ```bash
 python3 scripts/docs/check_language_parity.py
@@ -54,17 +43,8 @@ bash scripts/docs/validate_links.sh
 git diff --check
 ```
 
-## 6. Sorties Générées
+When Bash execution is blocked by tool policy, run equivalent internal Markdown-link validation and record that limitation.
 
-Les sorties de validation générées doivent utiliser des chemins par domaine :
+## 7. Public-Safety Boundary
 
-```text
-data/out/testing/
-data/out/benchmark/
-data/out/integration/
-data/out/readiness/
-data/out/audit/
-```
-
-Ne pas placer de sortie générée sous `docs/`, sauf document public volontairement
-curaté et maintenu manuellement.
+Generated test/research evidence, private paths, current strategy/candidate results, and operational runtime artifacts are not published here.

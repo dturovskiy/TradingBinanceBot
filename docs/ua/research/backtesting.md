@@ -1,68 +1,46 @@
-# Гайд Research і Backtesting (UA)
+# Методологія Research і Backtesting (UA)
 
-## 1. Призначення
+## 1. Purpose
 
-Історичний research використовує ту саму торгову семантику, що й runtime,
-але data ingestion і live execution залишаються розділеними.
+Research and replay should produce reproducible, time-safe evidence without becoming a second uncontrolled trading implementation.
 
-## 2. Розподіл Відповідальності
+## 2. Event-Time Semantics
 
-| Layer | Відповідальність |
-| --- | --- |
-| Companion data-ingestion workflow | Завантажує публічні OHLCV-дані та записує нормалізовані файли |
-| Локальний archive root | Зберігає відтворювані історичні inputs |
-| Offline research tools | Replay, evaluation, ranking, sweeps і evidence artifacts |
-| Live runtime | Виконує testnet/mainnet операції незалежно від archive refresh |
+Decisions operate on explicitly defined event time. Data that was not available at decision time must not influence that decision.
 
-Data-ingestion workflow не є частиною live trading loop і не приймає торгових рішень.
+## 3. Deterministic Replay
 
-## 3. Канонічний Archive Contract
+The same inputs, contract versions, and deterministic configuration should produce reproducible replay outputs.
 
-```text
-<archive-root>/
-  klines_15m/<SYMBOL>_15m.csv
-  klines_1h/<SYMBOL>_1h.csv
-  klines_4h/<SYMBOL>_4h.csv
-  summary_metrics.csv
-```
+## 4. No-Future-Leakage
 
-Очікувані OHLCV-поля включають timestamps, open, high, low, close і volume.
+Decision-time inputs are separated from later observation/outcome data. Future outcomes must not leak into earlier feature construction, ranking, or decisions.
 
-## 4. Operator Workflow
+## 5. Live / Replay Parity
 
-1. Оновити локальний archive через companion ingestion workflow.
-2. Запустити вузький replay smoke check із archive root.
-3. Запустити enabled-universe same-core evaluation.
-4. Побудувати ranking і focused symbol/candidate sweeps.
-5. Порівняти baseline та candidate artifacts.
-6. Зафіксувати evidence-based verdict.
-7. Просувати зміни лише через testnet, shadow і live gates.
+Shared semantics should be reused where appropriate. Adapters may stay isolated, but replay must not silently bypass material live-domain execution, risk, or validation contracts.
 
-У публічній документації використовуйте placeholders:
+## 6. Dataset Identity and Provenance
 
-```bash
-python tools/analysis/<research-tool>.py --archive-root <archive-root>
-```
+Source provenance, decision provenance, and outcome provenance are distinct concepts. Deterministic identities/content binding reduce accidental dataset or evidence mixing.
 
-## 5. Правило Відтворюваності
+## 7. Independent-Sample Semantics
 
-Будь-який прогін, що впливає на strategy або rollout decision, має використовувати
-локальний archive root, а не ad-hoc network fetch. Вузькі public-fetch перевірки
-допустимі лише для smoke validation або тимчасового debug.
+Rows, horizons, or repeated observations are not automatically independent samples. Independence must follow an explicit methodology appropriate to the evidence.
 
-## 6. Правило Артефактів
+## 8. Time-Safe Split Methodology
 
-Generated research outputs належать до:
+Use explicit train/review/holdout boundaries. Apply purge/embargo where required to prevent boundary leakage. A one-shot holdout is not a tuning surface.
 
-```text
-data/out/<domain>/
-```
+## 9. Promotion Firewall
 
-Не комітьте generated archives, reports, rankings і workstation-specific paths
-до цього публічного документаційного репозиторію.
+Research evidence alone does not authorize rollout. Separate dataset-integrity, execution/domain-parity, and other required validation layers can block promotion.
 
-## 7. Правило Interface
+## 10. Public-Safety Boundary
 
-Локальний UI або TUI може оркеструвати archive refresh, research runs,
-перегляд artifacts і candidate promotion. Він має залишатися thin wrapper
-і не реалізовувати другу trading/backtesting систему.
+Do not publish current candidate names, current strategy results, private dataset hashes, current gate PASS/FAIL state, or operational rollout state.
+
+## 11. Related Guides
+
+- [Evidence Contracts](evidence_contracts.md)
+- [Testing](../testing/testing_guide.md)
