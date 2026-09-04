@@ -1,69 +1,46 @@
-# Research and Backtesting Guide (EN)
+# Research and Backtesting Methodology (EN)
 
 ## 1. Purpose
 
-Historical research uses the same trading semantics as the runtime while keeping
-data ingestion and live execution separated.
+Research and replay should produce reproducible, time-safe evidence without becoming a second uncontrolled trading implementation.
 
-## 2. Responsibility Split
+## 2. Event-Time Semantics
 
-| Layer | Responsibility |
-| --- | --- |
-| Data-ingestion companion workflow | Fetch historical public OHLCV data and write normalized files |
-| Local archive root | Store repeatable historical inputs |
-| Offline research tools | Replay, evaluate, rank, sweep, and produce evidence |
-| Live runtime | Execute testnet/mainnet operations independently of archive refresh |
+Decisions operate on explicitly defined event time. Data that was not available at decision time must not influence that decision. Observation time, decision time, and outcome time can represent different concepts and must not be silently collapsed into one timestamp.
 
-The data-ingestion workflow is not part of the live trading loop and must not
-make trading decisions.
+## 3. Deterministic Replay
 
-## 3. Canonical Archive Contract
+The same inputs, contract versions, and deterministic configuration should produce reproducible replay outputs.
 
-```text
-<archive-root>/
-  klines_15m/<SYMBOL>_15m.csv
-  klines_1h/<SYMBOL>_1h.csv
-  klines_4h/<SYMBOL>_4h.csv
-  summary_metrics.csv
-```
+## 4. No-Future-Leakage
 
-Expected OHLCV-style fields include timestamps, open, high, low, close, and volume.
+Decision-time inputs are separated from later observation/outcome data. Future outcomes must not leak into earlier feature construction, ranking, or decisions.
 
-## 4. Operator Workflow
+## 5. Live / Replay Parity
 
-1. Refresh a local archive using the companion ingestion workflow.
-2. Run a narrow replay smoke check against the archive root.
-3. Run enabled-universe same-core evaluation.
-4. Produce ranking and focused symbol/candidate sweeps.
-5. Compare baseline and candidate artifacts.
-6. Record an evidence-based verdict.
-7. Promote only through testnet, shadow, and live gates.
+Shared semantics should be reused where appropriate. Adapters may stay isolated, but replay must not silently bypass material live-domain execution, risk, or validation contracts. Parity does not require identical environments; differences must be explicit and validated rather than accidental.
 
-Use placeholders in public docs:
+## 6. Dataset Identity and Provenance
 
-```bash
-python tools/analysis/<research-tool>.py --archive-root <archive-root>
-```
+Source provenance, decision provenance, and outcome provenance are distinct concepts. Deterministic identities/content binding reduce accidental dataset or evidence mixing.
 
-## 5. Reproducibility Rule
+## 7. Independent-Sample Semantics
 
-Any run that influences a strategy or rollout decision should use a local archive
-root rather than an ad-hoc network fetch. Narrow public-fetch checks are acceptable
-only for smoke validation or temporary debugging.
+Rows, horizons, or repeated observations are not automatically independent samples. Duplicate rows, overlapping horizons, or multiple representations of the same underlying event can represent correlated or aliased evidence rather than independent support. Independence must follow an explicit methodology appropriate to the evidence.
 
-## 6. Artifact Rule
+## 8. Time-Safe Split Methodology
 
-Generated research outputs belong under:
+Use explicit train/review/holdout boundaries. Apply purge/embargo where required to prevent boundary leakage. A one-shot holdout is not a tuning surface.
 
-```text
-data/out/<domain>/
-```
+## 9. Promotion Firewall
 
-Do not commit generated archives, reports, rankings, or workstation-specific paths
-to this public documentation repository.
+Research evidence alone does not authorize rollout. Separate dataset-integrity, execution/domain-parity, and other required validation layers can block promotion.
 
-## 7. Interface Rule
+## 10. Public-Safety Boundary
 
-A local UI or TUI may orchestrate archive refresh, research runs, artifact viewing,
-and candidate promotion. It must remain a thin wrapper and must not implement a
-second trading or backtesting engine.
+Do not publish current candidate names, current strategy results, private dataset hashes, current gate PASS/FAIL state, or operational rollout state. Generated research outputs belong in managed implementation artifact space rather than this public documentation repository.
+
+## 11. Related Guides
+
+- [Evidence Contracts](evidence_contracts.md)
+- [Testing](../testing/testing_guide.md)

@@ -1,95 +1,57 @@
-# Carte du Projet (FR)
-
-Mise à jour : 2026-05-30
-Date de revue public-safe : `2026-05-26`
+# Carte du projet (FR)
 
 ## 1. Limite de la documentation publique
 
-Cette carte décrit les ownership boundaries stables et public-safe. Elle ne
-reproduit pas le code source privé et n'exporte pas les preuves internes.
+Cette carte décrit des domaines de responsabilité stables et adaptés à la documentation publique, et non l’arborescence complète du code source privé.
 
-## 2. Domaines d'ownership runtime
+## 2. Domaines de responsabilité du runtime
 
-| Domaine | Responsabilité | Exemples de chemins public-safe |
-| --- | --- | --- |
-| Bootstrap / lifecycle | CLI bootstrap, startup, shutdown, initialization, runtime snapshots | `src/main_bot.py`, `src/bot_runner.py`, `src/lifecycle/*` |
-| Contexte runtime mutable | État partagé thread-safe et coordination | `src/bot_context.py` |
-| Itération trading | Séquence BUY/SELL, summaries, intégration du risque | `src/trading/*` |
-| Détail d'exécution | Validation, sizing, execution, persistence updates | `src/trade_processor.py`, `src/api/*` |
-| Risque portefeuille | Décisions, actions shadow/enforce, taxonomie des raisons | `src/risk/*` |
-| Monitoring / observability | Heartbeat, performance, métriques, rapports | `src/monitoring/*`, `src/observability/*`, `src/metrics/*` |
-| Telegram / contrôle opérateur | Notifications, menus, callbacks, watchdog | `src/telegram_ui/*`, `scripts/monitoring/*` |
-| Interface locale | Surface locale pour workflows audit/research | `interface/*` |
-| Outils offline | Audit, analyse, diagnostics, benchmarks, intégration | `tools/*` |
-
-## 3. Flux runtime de haut niveau
-
-1. Le bootstrap analyse les flags CLI et charge les configurations runtime et stratégie.
-2. L'initialisation lifecycle charge exchange state, positions, monitoring et snapshots.
-3. La boucle principale vérifie les limites supportées du hot reload.
-4. `TradingExecutor` prépare le contexte, exécute les vérifications SELL, rafraîchit
-   les balances si nécessaire, puis traite les candidats BUY.
-5. `TradeProcessor` valide les opportunités, calcule sizing et stop/target levels,
-   exécute ou simule les actions et persiste les résultats.
-6. Monitoring, métriques, rapports et notifications opérateur sont rafraîchis.
-
-Invariant clé : **SELL avant BUY**.
-
-## 4. Ownership de configuration
-
-| Domaine | Propriétaire canonique |
+| Domaine | Responsabilité publiable |
 | --- | --- |
-| Cadence opérationnelle, retry, telemetry, notifications, switches runtime | `config/config.json` |
-| TP/SL, indicateurs, targets, overrides d'actifs pris en charge | `config/strategy*.json` |
-| Kill-switch TA global minimal | `settings.enable_ta_confirmation` |
+| Initialisation / cycle de vie | Démarrage, arrêt, initialisation et orchestration de la disponibilité |
+| État mutable du runtime | Contexte d’exécution coordonné en mémoire |
+| Orchestration du trading | Séquencement des itérations et coordination du flux de trading |
+| État d’exécution durable / récupération | Intention et état d’exécution persistés, réconciliation après redémarrage et contrôle de disponibilité |
+| Exchange / API | Lecture de l’état externe de l’exchange et adaptateurs orientés ordres |
+| Risque de portefeuille | Politique et confinement du risque au niveau du portefeuille |
+| Monitoring / observabilité | Santé, métriques, télémétrie et rapports |
+| Contrôle opérateur | Notifications et contrôles destinés à l’opérateur |
+| Persistance / configuration | Responsabilité de la persistance du runtime et de la configuration |
+| Backtesting / replay | Replay en temps d’événement et méthodologie de parité d’exécution |
+| Recherche / preuves | Identité des jeux de données, provenance, validation et preuves de promotion |
 
-Les paramètres détenus par la stratégie ne retombent pas sur la configuration opérationnelle.
+## 3. Flux d’exécution de haut niveau
 
-## 5. Contrats de sécurité d'exécution
+1. L’initialisation et le cycle de vie mettent en place les domaines requis.
+2. L’état persisté et l’état mutable sont chargés.
+3. La réconciliation requise de l’état d’exécution s’effectue avant la disponibilité normale.
+4. L’orchestration normale du trading ne se poursuit que lorsque l’état requis est cohérent.
+5. Exchange/API, risque, persistance et observabilité restent des domaines de responsabilité séparés.
 
-- Dry-run simule l'exécution et ne place pas d'ordres réels.
-- Convert execution est réservé au mainnet et désactivé en dry-run.
-- Circuit breaker et error handling doivent contenir localement les erreurs par symbole.
-- Les changements de clés API exigent un redémarrage.
-- Le mode launcher détaché maintient le processus enfant après la sortie du wrapper.
+Il s’agit d’un ordre de responsabilité et de sécurité, et non d’une séquence exacte d’implémentation du démarrage.
 
-## 6. Limite Research / Backtesting
+## 4. État d’exécution durable / récupération
 
-```text
-workflow companion de data-ingestion
-              |
-              v
-       archive root OHLCV locale
-              |
-              v
-      outils offline same-core
-              |
-              v
- revue des preuves baseline vs candidate
-              |
-              v
-       testnet -> shadow -> live
-```
+L’exécution des ordres est distincte de la responsabilité de l’état durable. Un redémarrage peut nécessiter une réconciliation entre l’état externe de l’exchange et l’état géré localement. La récupération doit être déterministe et idempotente, tout état non résolu est traité en fail-closed, et la récupération n’autorise pas à elle seule le placement de nouveaux ordres.
 
-Le live runtime ne doit pas dépendre du workflow de rafraîchissement d'archive.
+Voir [Exécution / récupération](execution_recovery.md).
 
-## 7. Chemins Canoniques des Artifacts
+## 5. Limite recherche / replay
 
-| Classe d'artifact | Chemin public-safe canonique |
-| --- | --- |
-| Documentation maintenue manuellement | `docs/` |
-| État runtime mutable | `data/<env>/` |
-| État métriques mutable | `data/metrics/<env>/` |
-| Logs runtime | `logs/<env>/<hostname>/{activity,trades,performance,metrics}.log` |
-| Logs de contrôle racine | `logs/watchdog.log`, `logs/bot_launcher.log` |
-| Sorties offline générées | `data/out/<domain>/` |
-| Références benchmark suivies | `tools/benchmark/baselines/` |
+Le replay utilise un temps d’événement explicite et doit, lorsque c’est pertinent, partager les sémantiques de domaine importantes avec l’exécution live. Les adaptateurs peuvent rester isolés, mais le replay ne doit pas contourner silencieusement des contrats importants du domaine live. La parité n’exige pas que les environnements offline et live soient identiques : leurs différences doivent être explicites et validées plutôt qu’accidentelles.
 
-Les artifacts générés n'appartiennent pas aux chemins documentaires par défaut.
+Voir [Recherche / backtesting](../research/backtesting.md).
 
-## 8. Guides Associés
+Les concepts stables de propriété des artefacts et de configuration couvrent la documentation maintenue manuellement, l’état mutable du runtime ou de la télémétrie, les logs opérationnels, les sorties offline générées par la recherche ou les tests et les artefacts de référence suivis lorsqu’ils font partie d’un contrat développeur stable. Une sortie générée ne devient pas une documentation canonique par simple emplacement ou commodité.
 
-- [Research / Backtesting](../research/backtesting.md)
+## 6. Limites de publication sûre
+
+Cette page ne publie ni les noms ou formats exacts des journaux, ni l’ordre des écritures, les fenêtres de panne, les commandes de récupération, les procédures de réconciliation live, les seuils de production, l’état opérationnel courant ou la topologie privée.
+
+## 7. Guides associés
+
+- [Exécution / récupération](execution_recovery.md)
+- [Recherche / backtesting](../research/backtesting.md)
+- [Contrats de preuve](../research/evidence_contracts.md)
 - [Tests](../testing/testing_guide.md)
-- [Logs et artifacts](../operations/logging.md)
-- [Shared Scope](../../shared/docs_scope.md)
+- [Journalisation et artefacts](../operations/logging.md)

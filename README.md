@@ -1,9 +1,8 @@
 # TradingBinanceBot Documentation Hub
 
-Public documentation repository for a private trading-bot implementation.
+Public documentation-only repository for a private trading/runtime/research implementation.
 
-> Documentation-only repository.
-> Runtime code, credentials, production data, and internal-only operational artifacts remain private.
+> Runtime source, credentials, production state, current strategies/candidates, private operational evidence, and infrastructure details remain private.
 
 ## Start
 
@@ -20,7 +19,9 @@ Public documentation repository for a private trading-bot implementation.
 | Topic | EN | UA | FR |
 | --- | --- | --- | --- |
 | Architecture | [Open](docs/en/architecture/project_map.md) | [Open](docs/ua/architecture/project_map.md) | [Open](docs/fr/architecture/project_map.md) |
+| Execution / Recovery | [Open](docs/en/architecture/execution_recovery.md) | [Open](docs/ua/architecture/execution_recovery.md) | [Open](docs/fr/architecture/execution_recovery.md) |
 | Research / Backtesting | [Open](docs/en/research/backtesting.md) | [Open](docs/ua/research/backtesting.md) | [Open](docs/fr/research/backtesting.md) |
+| Evidence Contracts | [Open](docs/en/research/evidence_contracts.md) | [Open](docs/ua/research/evidence_contracts.md) | [Open](docs/fr/research/evidence_contracts.md) |
 | Testing | [Open](docs/en/testing/testing_guide.md) | [Open](docs/ua/testing/testing_guide.md) | [Open](docs/fr/testing/testing_guide.md) |
 | Logging and Artifacts | [Open](docs/en/operations/logging.md) | [Open](docs/ua/operations/logging.md) | [Open](docs/fr/operations/logging.md) |
 
@@ -36,5 +37,11 @@ Public documentation repository for a private trading-bot implementation.
 ## Changelog
 
 - [CHANGELOG](CHANGELOG.md)
-- Last public-safe sync date: **2026-05-30**
-- Public-safe source review date: `2026-05-26`
+
+## Reviewed Sync Provenance
+
+- Review date: `2026-09-04`
+- Reviewed private source commit: `05a4214895111bcdbb7960223b4af232c066c48c`
+- Private source commit date: `2026-09-03`
+- Previous public sync: `2026-05-30`
+- Previous exact private source SHA: `not recorded`

@@ -1,20 +1,28 @@
 # Glossary
 
-- `TradingBinanceBot`: public documentation repository.
-- `TradingExecutor`: orchestrator of per-iteration buy/sell/risk flow.
-- `RiskManager`: portfolio risk-policy evaluator with modes such as `off`, `shadow`, and `enforce`.
-- `Feature Flag`: runtime rollout switch in configuration.
-- `Circuit Breaker`: guard that blocks a symbol after repeated failures.
-- `Illiquid Position`: symbol temporarily blocked from trading.
-- `Dry-run`: simulation mode without real order placement.
-- `Testnet`: Binance testing environment.
-- `Mainnet`: live Binance environment with real funds.
-- `Archive Root`: local directory containing normalized historical OHLCV files and summary metadata.
-- `Data-Ingestion Layer`: companion workflow that fetches and stores historical market data.
-- `Same-Core Replay`: research/backtesting execution that reuses the trading core instead of maintaining a second strategy implementation.
-- `Research Layer`: offline tools that run replay, ranking, sweeps, and proof workflows.
-- `Baseline`: reference result used for comparison.
-- `Candidate`: proposed strategy/configuration revision evaluated against a baseline.
-- `Promotion Gate`: evidence checkpoint before moving a candidate toward testnet, shadow, or live rollout.
-- `Generated Offline Output`: non-runtime artifact stored under `data/out/<domain>/`.
-- `Artifact Ownership`: rule describing the canonical home of a document, log, state file, or generated report.
+- `TradingBinanceBot`: public documentation-only repository.
+- `Bootstrap / Lifecycle`: ownership domain for process startup, shutdown, subsystem initialization, and readiness coordination.
+- `Trading Orchestration`: domain that sequences trading-cycle decision and execution work.
+- `Portfolio Risk`: portfolio-level risk policy and containment domain, separate from order-state recovery.
+- `Durable Execution State`: locally persisted execution intent/state used to reason safely across ambiguous outcomes or process restarts.
+- `Reconciliation`: comparison and resolution of externally observed exchange state with locally managed state.
+- `Restart Recovery`: deterministic process for resolving durable execution state before normal readiness.
+- `Idempotency`: property that allows a recovery or state-application step to be repeated without duplicating its effect.
+- `Readiness Gate`: condition that must be satisfied before normal trading activity resumes.
+- `Fail Closed`: block progression when required state or evidence remains unresolved.
+- `Event Time`: explicitly defined time associated with an observation or decision in replay or research.
+- `Deterministic Replay`: reproducible replay for the same inputs and contract versions.
+- `No-Future-Leakage`: rule preventing future observations/outcomes from influencing past decisions.
+- `Live / Replay Parity`: requirement that replay preserve material live-domain semantics while environment-specific differences remain explicit and validated.
+- `Dataset Identity`: deterministic identity binding a dataset to its intended contents/provenance.
+- `Provenance`: metadata describing the origin, role, and transformation context of data or evidence.
+- `Content-Bound Evidence`: evidence whose identity is deterministically tied to the content/contracts it represents.
+- `Independent Sample`: an observation counted as statistically independent under an explicit methodology rather than merely because it occupies a separate row.
+- `Time-Safe Split`: train/review/holdout methodology that prevents temporal leakage, including purge/embargo where required.
+- `Purge / Embargo`: time-safety techniques used to reduce leakage across train/review/holdout boundaries.
+- `One-Shot Holdout`: holdout semantics intended to prevent repeated tuning against the final evaluation set.
+- `Promotion Gate`: evidence checkpoint that must be satisfied before a candidate can advance toward deployment.
+- `Promotion Firewall`: separation between favorable research evidence and authorization to advance toward deployment; other integrity/parity/safety gates can still block progression.
+- `Execution/Domain Parity`: validation that replay/research does not silently bypass material execution, timing, risk, or state contracts.
+- `Artifact Ownership`: rule describing the canonical home and lifecycle of a document, state artifact, log, or generated output.
+- `Generated Offline Output`: non-runtime artifact produced by analysis, testing, or research tooling; it does not become canonical documentation by location or convenience.

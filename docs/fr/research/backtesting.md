@@ -1,69 +1,46 @@
-# Guide Research et Backtesting (FR)
+# Méthodologie de recherche et de backtesting (FR)
 
 ## 1. Objectif
 
-La recherche historique utilise la même sémantique de trading que le runtime,
-tout en séparant data ingestion et live execution.
+La recherche et le replay doivent produire des preuves reproductibles et sûres sur le plan temporel, sans devenir une seconde implémentation de trading non contrôlée.
 
-## 2. Répartition des Responsabilités
+## 2. Sémantique du temps d’événement
 
-| Couche | Responsabilité |
-| --- | --- |
-| Workflow companion de data-ingestion | Récupérer les données OHLCV publiques et écrire des fichiers normalisés |
-| Archive root locale | Stocker des entrées historiques reproductibles |
-| Outils offline de recherche | Replay, évaluation, ranking, sweeps et artifacts de preuve |
-| Live runtime | Exécuter testnet/mainnet indépendamment du rafraîchissement d'archive |
+Les décisions reposent sur un event time explicitement défini. Les données qui n’étaient pas disponibles au moment de la décision ne doivent pas influencer cette décision. Le temps d’observation, le temps de décision et le temps du résultat peuvent représenter des concepts différents et ne doivent pas être silencieusement ramenés à un seul timestamp.
 
-Le workflow d'ingestion ne fait pas partie de la boucle live et ne prend pas de
-décisions de trading.
+## 3. Replay déterministe
 
-## 3. Contrat Canonique de l'Archive
+Les mêmes entrées, versions de contrats et configuration déterministe doivent produire des résultats de replay reproductibles.
 
-```text
-<archive-root>/
-  klines_15m/<SYMBOL>_15m.csv
-  klines_1h/<SYMBOL>_1h.csv
-  klines_4h/<SYMBOL>_4h.csv
-  summary_metrics.csv
-```
+## 4. Absence de fuite d’informations futures
 
-Les champs OHLCV attendus incluent timestamps, open, high, low, close et volume.
+Les entrées disponibles au moment de la décision sont séparées des données d’observation ou de résultat ultérieures. Les résultats futurs ne doivent pas se retrouver dans la construction antérieure des features, le classement ou les décisions.
 
-## 4. Workflow Opérateur
+## 5. Parité live / replay
 
-1. Rafraîchir une archive locale avec le workflow companion d'ingestion.
-2. Lancer un replay smoke check étroit avec l'archive root.
-3. Lancer une évaluation enabled-universe same-core.
-4. Produire ranking et sweeps ciblés symbole/candidate.
-5. Comparer les artifacts baseline et candidate.
-6. Enregistrer un verdict fondé sur les preuves.
-7. Promouvoir uniquement via les gates testnet, shadow et live.
+Les sémantiques communes doivent être réutilisées lorsque c’est pertinent. Les adaptateurs peuvent rester isolés, mais le replay ne doit pas contourner silencieusement des contrats importants d’exécution live, de risque ou de validation. La parité n’exige pas des environnements identiques : les différences doivent être explicites et validées plutôt qu’accidentelles.
 
-Utiliser des placeholders dans les docs publiques :
+## 6. Identité et provenance des jeux de données
 
-```bash
-python tools/analysis/<research-tool>.py --archive-root <archive-root>
-```
+La provenance de la source, de la décision et du résultat correspond à des concepts distincts. Des identités déterministes et une liaison au contenu réduisent les mélanges accidentels de jeux de données ou de preuves.
 
-## 5. Règle de Reproductibilité
+## 7. Sémantique des échantillons indépendants
 
-Tout run influençant une décision de stratégie ou de rollout doit utiliser une
-archive root locale plutôt qu'un fetch réseau ad-hoc. Les vérifications public-fetch
-étroites sont acceptables uniquement pour smoke validation ou debug temporaire.
+Les lignes, horizons ou observations répétées ne constituent pas automatiquement des échantillons indépendants. Des lignes dupliquées, des horizons qui se chevauchent ou plusieurs représentations du même événement sous-jacent peuvent constituer des preuves corrélées ou aliasées plutôt qu’un support indépendant. L’indépendance doit découler d’une méthodologie explicite adaptée aux preuves considérées.
 
-## 6. Règle des Artifacts
+## 8. Méthodologie de découpage respectant le temps
 
-Les sorties générées de recherche appartiennent à :
+Utilisez des frontières explicites train/review/holdout. Appliquez purge/embargo lorsque nécessaire pour éviter les fuites aux frontières. Un holdout utilisé une seule fois n’est pas une surface de tuning.
 
-```text
-data/out/<domain>/
-```
+## 9. Barrière de promotion
 
-Ne pas committer archives, rapports, rankings ou chemins propres au workstation
-dans ce dépôt public de documentation.
+Les preuves issues de la recherche n’autorisent pas à elles seules un rollout. Des couches distinctes de validation de l’intégrité des jeux de données, de la parité execution/domain et d’autres exigences peuvent bloquer la promotion.
 
-## 7. Règle d'Interface
+## 10. Limite de publication sûre
 
-Une UI ou TUI locale peut orchestrer refresh archive, research runs, affichage
-des artifacts et candidate promotion. Elle doit rester un thin wrapper et ne pas
-implémenter un second moteur de trading/backtesting.
+Ne publiez pas les noms actuels de candidats, les résultats actuels de stratégies, les hashes privés de jeux de données, l’état courant PASS/FAIL d’un gate ni l’état opérationnel du rollout. Les sorties de recherche générées appartiennent à l’espace d’artefacts géré de l’implémentation privée, et non à ce dépôt public de documentation.
+
+## 11. Guides associés
+
+- [Contrats de preuve](evidence_contracts.md)
+- [Tests](../testing/testing_guide.md)

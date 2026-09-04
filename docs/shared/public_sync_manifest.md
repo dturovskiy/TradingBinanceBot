@@ -1,37 +1,30 @@
 # Public Sync Manifest
 
-## Current Public-Safe Snapshot
+## Reviewed Public-Safe Snapshot
 
-- Public documentation sync date: `2026-05-30`
-- Private implementation: maintained in a separate non-public repository
-- Public-safe source review date: `2026-05-26`
+- Documentation review date: `2026-09-04`
+- Reviewed private source commit: `05a4214895111bcdbb7960223b4af232c066c48c`
+- Private source commit date: `2026-09-03`
+- Previous public sync: `2026-05-30`
+- Previous recorded private source review date: `2026-05-26`
+- Previous exact private source SHA: `not recorded`
 
-## Curated Source Contracts
+## Source Binding Rule
 
-This public-safe sync was derived from stable contracts represented by:
+This and future documentation syncs are commit-bound rather than date-only. The reviewed private Git commit identifies the source snapshot used for factual review; a review date alone is not sufficient source provenance.
 
-- root runtime overview;
-- current project map;
-- configuration ownership contract;
-- runtime behavior contract;
-- artifact ownership matrix;
-- data archive and backtesting research guide;
-- launcher/process-control behavior affecting detached starts.
+## Curated Contract Families
+
+This reviewed snapshot covers stable public-safe contracts for architecture and artifact ownership, lifecycle/readiness, durable execution state and recovery, research/backtesting event-time and replay semantics, dataset identity and provenance, evidence/promotion methodology, testing/validation, and documentation governance.
 
 ## Publication Boundary
 
-This repository is not a mirror of the private implementation. The sync exports
-operator-facing contracts and architecture guidance only.
+This repository is not a source-code mirror. It intentionally excludes implementation source, credentials, production state/logs, current strategies/candidates/rankings, exact production thresholds, infrastructure topology, exact recovery commands, and private operational evidence.
 
-The sync intentionally excludes:
+## Historical Note
 
-- private runtime source;
-- credentials and environment values;
-- production state and logs;
-- workstation-specific paths;
-- unpublished strategy candidates, rankings, and internal rollout evidence.
+The previous public sync was recorded on `2026-05-30` after a private-source review dated `2026-05-26`. Its exact private source SHA was not recorded and must not be inferred, reconstructed, or guessed.
 
-## Review Rule
+## Future Sync Rule
 
-When the private implementation changes after the public-safe review date above, review
-`docs/shared/docs_sync_policy.md` and run another public-safe sync pass.
+Future public syncs must record the exact reviewed private source commit SHA and commit date, the documentation review date, and the resulting public sync/publication date or durable publication status. Do not identify a source snapshot by review date alone.

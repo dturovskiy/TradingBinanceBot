@@ -1,95 +1,57 @@
 # Project Map (EN)
 
-Updated: 2026-05-30
-Public-safe source review date: `2026-05-26`
-
 ## 1. Public Documentation Boundary
 
-This map describes stable public-safe ownership boundaries. It does not mirror
-private source code or expose internal-only evidence.
+This map describes stable public-safe ownership domains, not the full private source tree.
 
 ## 2. Runtime Ownership Domains
 
-| Domain | Responsibility | Public-safe path examples |
-| --- | --- | --- |
-| Bootstrap / lifecycle | CLI bootstrap, startup, shutdown, initialization, runtime snapshots | `src/main_bot.py`, `src/bot_runner.py`, `src/lifecycle/*` |
-| Mutable runtime context | Thread-safe shared state and coordination | `src/bot_context.py` |
-| Trading iteration | Buy/sell sequencing, summaries, risk integration | `src/trading/*` |
-| Trade execution detail | Validation, sizing, execution, persistence updates | `src/trade_processor.py`, `src/api/*` |
-| Portfolio risk | Risk decisions, shadow/enforce actions, reason taxonomy | `src/risk/*` |
-| Monitoring / observability | Heartbeat, performance, metrics, reports | `src/monitoring/*`, `src/observability/*`, `src/metrics/*` |
-| Telegram / operator control | Notifications, menus, callbacks, watchdog control | `src/telegram_ui/*`, `scripts/monitoring/*` |
-| Local interface | Local control and audit/research launch surface | `interface/*` |
-| Offline tooling | Audit, analysis, diagnostics, benchmarks, integration tools | `tools/*` |
+| Domain | Public-safe responsibility |
+| --- | --- |
+| Bootstrap / lifecycle | Startup, shutdown, initialization, readiness orchestration |
+| Mutable runtime state | Coordinated in-memory runtime context |
+| Trading orchestration | Iteration sequencing and trading-flow coordination |
+| Durable execution state / recovery | Persisted execution intent/state, restart reconciliation, readiness gating |
+| Exchange / API | External exchange reads and order-facing adapters |
+| Portfolio risk | Portfolio-level risk policy and containment |
+| Monitoring / observability | Health, metrics, telemetry, reports |
+| Operator control | Notifications and operator-facing controls |
+| Persistence / config | Runtime persistence and configuration ownership |
+| Backtesting / replay | Event-time replay and execution-parity methodology |
+| Research / evidence | Dataset identity, provenance, validation and promotion evidence |
 
 ## 3. High-Level Runtime Flow
 
-1. Bootstrap parses CLI flags and loads runtime and strategy configuration.
-2. Lifecycle initialization loads exchange state, positions, monitoring, and snapshots.
-3. The main loop checks supported config hot-reload boundaries.
-4. `TradingExecutor` prepares context, runs SELL checks, refreshes balances when
-   required, then processes BUY candidates.
-5. `TradeProcessor` validates opportunities, computes sizing and stop/target levels,
-   executes or simulates actions, and persists results.
-6. Monitoring, metrics, reports, and operator notifications are refreshed.
+1. Bootstrap and lifecycle initialize required domains.
+2. Persisted/mutable state is loaded.
+3. Required execution-state reconciliation runs before normal readiness.
+4. Normal trading orchestration proceeds only when required state is consistent.
+5. Exchange/API, risk, persistence, and observability remain separate ownership domains.
 
-Key invariant: **SELL before BUY**.
+This is ownership and safety ordering, not an exact startup implementation sequence.
 
-## 4. Configuration Ownership
+## 4. Durable Execution State / Recovery
 
-| Domain | Canonical owner |
-| --- | --- |
-| Operational cadence, retry, telemetry, notifications, runtime switches | `config/config.json` |
-| TP/SL, indicators, targets, supported asset overrides | `config/strategy*.json` |
-| Minimal global TA kill-switch | `settings.enable_ta_confirmation` |
+Order execution is separate from durable state ownership. A restart can require reconciliation between external exchange state and locally managed state. Recovery must be deterministic and idempotent, unresolved state fails closed, and recovery itself does not authorize fresh order placement.
 
-Strategy-owned parameters do not use operational config as a fallback.
+See [Execution / Recovery](execution_recovery.md).
 
-## 5. Execution-Safety Contracts
+## 5. Research / Replay Boundary
 
-- Dry-run performs simulated execution and must not place real orders.
-- Convert execution is mainnet-only and disabled for dry-run.
-- Circuit-breaker and error handling should contain symbol-level failures locally.
-- API-key changes remain restart-required.
-- Detached launcher mode leaves the child bot process running after wrapper exit.
+Replay uses explicit event time and should share material domain semantics with live execution where appropriate. Adapters may remain isolated, but replay must not silently bypass important live-domain contracts. Parity does not require identical offline and live environments; differences must be explicit and validated rather than accidental.
 
-## 6. Research / Backtesting Boundary
+See [Research / Backtesting](../research/backtesting.md).
 
-```text
-data-ingestion companion workflow
-              |
-              v
-      local OHLCV archive root
-              |
-              v
-    offline same-core research tools
-              |
-              v
- baseline vs candidate evidence review
-              |
-              v
-       testnet -> shadow -> live
-```
+Stable artifact/configuration concepts include human-maintained documentation, mutable runtime or telemetry state, operational logs, generated offline research/testing outputs, and tracked reference artifacts when they are part of a stable developer contract. Generated outputs do not become canonical documentation by location or convenience.
 
-Live runtime must not depend on the archive-refresh workflow.
+## 6. Public-Safety Limits
 
-## 7. Canonical Artifact Paths
+This page does not publish exact journal names/formats, write ordering, crash windows, recovery commands, live reconciliation procedures, production thresholds, current operational state, or private topology.
 
-| Artifact class | Canonical public-safe path |
-| --- | --- |
-| Human-maintained docs | `docs/` |
-| Mutable runtime state | `data/<env>/` |
-| Mutable metrics state | `data/metrics/<env>/` |
-| Runtime operational logs | `logs/<env>/<hostname>/{activity,trades,performance,metrics}.log` |
-| Root control logs | `logs/watchdog.log`, `logs/bot_launcher.log` |
-| Generated offline outputs | `data/out/<domain>/` |
-| Tracked benchmark references | `tools/benchmark/baselines/` |
+## 7. Related Guides
 
-Generated artifacts do not belong in documentation paths by default.
-
-## 8. Related Guides
-
+- [Execution / Recovery](execution_recovery.md)
 - [Research / Backtesting](../research/backtesting.md)
+- [Evidence Contracts](../research/evidence_contracts.md)
 - [Testing](../testing/testing_guide.md)
 - [Logging and Artifacts](../operations/logging.md)
-- [Shared Scope](../../shared/docs_scope.md)

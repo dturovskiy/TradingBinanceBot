@@ -6,10 +6,32 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Planned
+### Prepared - 2026-09-04 Public Documentation Sync
 
-- Extend public API-domain documentation where the contract is stable and safe to publish.
-- Add CI automation for language parity and markdown link checks.
+#### Added
+
+- Durable execution/recovery contract pages in EN/UA/FR.
+- Evidence/provenance contract pages in EN/UA/FR.
+
+#### Changed
+
+- Refreshed public architecture ownership, including durable execution state/recovery.
+- Modernized research/backtesting methodology around event time, deterministic replay, no-future-leakage, dataset identity, time-safe splits, and promotion firewalls.
+- Expanded testing taxonomy without freezing a test count or coverage percentage.
+- Strengthened public-sync provenance and public-safety governance.
+- Preserved EN/UA/FR path, hierarchy, factual, security-boundary, and link parity.
+
+#### Security
+
+- Published no private implementation source, runtime/trading state, current strategies/candidates/rankings, production thresholds, infrastructure topology, exact recovery commands, or private operational evidence.
+- The reviewed private Git SHA is recorded only as approved documentation provenance.
+
+### Provenance
+
+- Review date: `2026-09-04`
+- Reviewed private source: `05a4214895111bcdbb7960223b4af232c066c48c`
+- Previous public sync: `2026-05-30`
+- Previous exact private source SHA: `not recorded`
 
 ## [2026-05-30] - Current Architecture and Research Sync
 
@@ -24,20 +46,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Synced public documentation after a public-safety review of the private implementation on `2026-05-26`.
 - Clarified the boundary between the public documentation repository and the private implementation.
-- Updated architecture maps with runtime ownership boundaries, observability,
-  local interface, tooling, and artifact-path contracts.
-- Updated testing guides to cover documentation validation, research workflows,
-  launcher behavior checks, and generated-output locations.
-- Updated logging guides to separate runtime logs, mutable metrics state, root-level
-  control logs, and generated offline outputs.
+- Updated architecture maps with runtime ownership boundaries, observability, local interface, tooling, and artifact-path contracts.
+- Updated testing guides to cover documentation validation, research workflows, launcher behavior checks, and generated-output locations.
+- Updated logging guides to separate runtime logs, mutable metrics state, root-level control logs, and generated offline outputs.
 - Updated language parity validation to require the research/backtesting page.
 
 ### Security
 
-- No runtime source code, credentials, production data, workstation-specific paths,
-  or strategy-specific candidate artifacts are exported by this sync.
+- No runtime source code, credentials, production data, workstation-specific paths, or strategy-specific candidate artifacts were exported by this sync.
 
-## [2026.02.28] - Documentation Architecture Restructure
+## [2026-02-28] - Documentation Architecture Restructure
 
 ### Added
 
@@ -72,7 +90,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - `LOGGING*.md`
 - Legacy `README_LOCALIZATIONS/` directory.
 
-## [2025.12.26] - Stage 3 Documentation Baseline (Archived)
+## [2025-12-26] - Stage 3 Documentation Baseline (Archived)
 
 ### Notes
 

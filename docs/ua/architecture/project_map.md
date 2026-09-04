@@ -1,95 +1,57 @@
-# Мапа Проєкту (UA)
+# Карта проєкту (UA)
 
-Оновлено: 2026-05-30
-Дата public-safe review: `2026-05-26`
+## 1. Межі публічної документації
 
-## 1. Межа публічної документації
+Ця карта описує стабільні домени відповідальності, безпечні для публічної документації, а не повне дерево приватного вихідного коду.
 
-Ця мапа описує стабільні public-safe ownership boundaries. Вона не є дзеркалом
-приватного source code і не експортує internal-only evidence.
+## 2. Домени відповідальності середовища виконання
 
-## 2. Runtime Ownership Domains
-
-| Домен | Відповідальність | Public-safe приклади шляхів |
-| --- | --- | --- |
-| Bootstrap / lifecycle | CLI bootstrap, startup, shutdown, initialization, runtime snapshots | `src/main_bot.py`, `src/bot_runner.py`, `src/lifecycle/*` |
-| Mutable runtime context | Thread-safe shared state і coordination | `src/bot_context.py` |
-| Trading iteration | BUY/SELL sequencing, summaries, risk integration | `src/trading/*` |
-| Trade execution detail | Validation, sizing, execution, persistence updates | `src/trade_processor.py`, `src/api/*` |
-| Portfolio risk | Risk decisions, shadow/enforce actions, reason taxonomy | `src/risk/*` |
-| Monitoring / observability | Heartbeat, performance, metrics, reports | `src/monitoring/*`, `src/observability/*`, `src/metrics/*` |
-| Telegram / operator control | Notifications, menus, callbacks, watchdog control | `src/telegram_ui/*`, `scripts/monitoring/*` |
-| Local interface | Локальна control surface для audit/research workflows | `interface/*` |
-| Offline tooling | Audit, analysis, diagnostics, benchmarks, integration tools | `tools/*` |
-
-## 3. Високорівневий Runtime Flow
-
-1. Bootstrap читає CLI flags і завантажує runtime та strategy configuration.
-2. Lifecycle initialization завантажує exchange state, positions, monitoring і snapshots.
-3. Main loop перевіряє підтримувані config hot-reload boundaries.
-4. `TradingExecutor` готує context, запускає SELL checks, за потреби оновлює
-   balances і лише потім обробляє BUY candidates.
-5. `TradeProcessor` валідує opportunities, розраховує sizing і stop/target levels,
-   виконує або симулює actions та зберігає результати.
-6. Monitoring, metrics, reports і operator notifications оновлюються.
-
-Ключовий інваріант: **SELL перед BUY**.
-
-## 4. Ownership Конфігурації
-
-| Домен | Канонічний власник |
+| Домен | Відповідальність у публічній документації |
 | --- | --- |
-| Operational cadence, retry, telemetry, notifications, runtime switches | `config/config.json` |
-| TP/SL, indicators, targets, підтримувані asset overrides | `config/strategy*.json` |
-| Мінімальний глобальний TA kill-switch | `settings.enable_ta_confirmation` |
+| Ініціалізація / життєвий цикл | Запуск, завершення роботи, ініціалізація та оркестрація готовності |
+| Змінюваний стан виконання | Узгоджений контекст виконання в пам’яті |
+| Оркестрація торгівлі | Послідовність ітерацій і координація торгового потоку |
+| Стійкий стан виконання / відновлення | Збережені намір і стан виконання, узгодження після перезапуску та контроль готовності |
+| Біржа / API | Читання зовнішнього стану біржі та адаптери для роботи з ордерами |
+| Портфельний ризик | Політика ризику на рівні портфеля та його обмеження |
+| Моніторинг / спостережуваність | Стан здоров’я, метрики, телеметрія та звіти |
+| Керування оператором | Сповіщення та засоби керування для оператора |
+| Збереження стану / конфігурація | Відповідальність за збереження стану виконання та конфігурацію |
+| Бектестинг / replay | Відтворення за часом подій і методологія паритету виконання |
+| Дослідження / доказова база | Ідентичність наборів даних, provenance, валідація та докази для promotion |
 
-Strategy-owned параметри не використовують operational config як fallback.
+## 3. Високорівневий потік виконання
 
-## 5. Execution-Safety Contracts
+1. Ініціалізація та життєвий цикл запускають потрібні домени.
+2. Завантажується збережений і змінюваний стан.
+3. До переходу в нормальний стан готовності виконується потрібне узгодження стану виконання.
+4. Звичайна оркестрація торгівлі продовжується лише тоді, коли потрібний стан узгоджено.
+5. Біржа/API, ризик, збереження стану та спостережуваність залишаються окремими доменами відповідальності.
 
-- Dry-run симулює execution і не має розміщувати реальні ордери.
-- Convert execution працює лише у mainnet і вимкнений для dry-run.
-- Circuit breaker та error handling мають локалізувати symbol-level failures.
-- Зміни API keys потребують restart.
-- Detached launcher mode залишає child bot process активним після exit wrapper-процесу.
+Це порядок відповідальності та безпеки, а не точна послідовність реалізації запуску.
 
-## 6. Межа Research / Backtesting
+## 4. Стійкий стан виконання / відновлення
 
-```text
-companion data-ingestion workflow
-              |
-              v
-      локальний OHLCV archive root
-              |
-              v
-      offline same-core research tools
-              |
-              v
- baseline vs candidate evidence review
-              |
-              v
-       testnet -> shadow -> live
-```
+Виконання ордерів відокремлене від відповідальності за стійкий стан. Після перезапуску може знадобитися узгодження зовнішнього стану біржі з локально керованим станом. Відновлення має бути детермінованим та ідемпотентним, невирішений стан обробляється за принципом fail-closed, а саме відновлення не надає дозволу на розміщення нових ордерів.
 
-Live runtime не повинен залежати від archive-refresh workflow.
+Див. [Виконання / відновлення](execution_recovery.md).
 
-## 7. Канонічні Шляхи Артефактів
+## 5. Межа досліджень / replay
 
-| Клас артефактів | Канонічний public-safe шлях |
-| --- | --- |
-| Human-maintained docs | `docs/` |
-| Mutable runtime state | `data/<env>/` |
-| Mutable metrics state | `data/metrics/<env>/` |
-| Runtime operational logs | `logs/<env>/<hostname>/{activity,trades,performance,metrics}.log` |
-| Root control logs | `logs/watchdog.log`, `logs/bot_launcher.log` |
-| Generated offline outputs | `data/out/<domain>/` |
-| Tracked benchmark references | `tools/benchmark/baselines/` |
+Replay використовує явно визначений час подій і, де це доречно, має спільно використовувати суттєву доменну семантику з live-виконанням. Адаптери можуть залишатися ізольованими, але replay не повинен непомітно обходити важливі контракти live-домену. Паритет не вимагає тотожності offline- та live-середовищ: відмінності мають бути явними й перевіреними, а не випадковими.
 
-Generated artifacts за замовчуванням не належать до documentation paths.
+Див. [Дослідження / бектестинг](../research/backtesting.md).
 
-## 8. Пов'язані Гайди
+До стабільних концептів володіння артефактами та конфігурацією належать документація, яку підтримують вручну, змінюваний runtime- або telemetry-стан, операційні журнали, згенеровані offline-результати досліджень/тестування та відстежувані еталонні артефакти, якщо вони є частиною стабільного developer-контракту. Згенеровані результати не стають канонічною документацією лише через місце зберігання або зручність.
 
-- [Research / Backtesting](../research/backtesting.md)
+## 6. Обмеження публічної безпеки
+
+Ця сторінка не публікує точні назви або формати журналів, порядок запису, вікна збоїв, команди відновлення, процедури live-узгодження, production-пороги, поточний операційний стан або приватну топологію.
+
+## 7. Пов’язані матеріали
+
+- [Виконання / відновлення](execution_recovery.md)
+- [Дослідження / бектестинг](../research/backtesting.md)
+- [Контракти доказової бази](../research/evidence_contracts.md)
 - [Тестування](../testing/testing_guide.md)
 - [Логування та артефакти](../operations/logging.md)
-- [Shared Scope](../../shared/docs_scope.md)

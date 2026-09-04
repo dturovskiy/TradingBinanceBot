@@ -14,7 +14,9 @@ Primary entrypoint for public-safe project documentation.
 | --- | --- | --- | --- |
 | Overview | [Open](en/overview.md) | [Open](ua/overview.md) | [Open](fr/overview.md) |
 | Architecture | [Open](en/architecture/project_map.md) | [Open](ua/architecture/project_map.md) | [Open](fr/architecture/project_map.md) |
+| Execution / Recovery | [Open](en/architecture/execution_recovery.md) | [Open](ua/architecture/execution_recovery.md) | [Open](fr/architecture/execution_recovery.md) |
 | Research / Backtesting | [Open](en/research/backtesting.md) | [Open](ua/research/backtesting.md) | [Open](fr/research/backtesting.md) |
+| Evidence Contracts | [Open](en/research/evidence_contracts.md) | [Open](ua/research/evidence_contracts.md) | [Open](fr/research/evidence_contracts.md) |
 | Testing | [Open](en/testing/testing_guide.md) | [Open](ua/testing/testing_guide.md) | [Open](fr/testing/testing_guide.md) |
 | Logging and Artifacts | [Open](en/operations/logging.md) | [Open](ua/operations/logging.md) | [Open](fr/operations/logging.md) |
 
