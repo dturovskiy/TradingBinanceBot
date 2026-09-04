@@ -15,11 +15,15 @@ This and future documentation syncs are commit-bound rather than date-only. The 
 
 ## Curated Contract Families
 
-This reviewed snapshot covers stable public-safe contracts for architecture and artifact ownership, lifecycle/readiness, durable execution state and recovery, research/backtesting event-time and replay semantics, dataset identity and provenance, evidence/promotion methodology, testing/validation, and documentation governance.
+This reviewed snapshot covers stable public-safe contracts for architecture and module-family ownership, lifecycle/readiness, durable execution state and recovery, reliability/failure handling, observability, operator control, research/backtesting event-time and replay semantics, dataset/external-source identity and provenance, microstructure/execution-quality methodology, preregistered bounded offline dataset workflows, evidence/promotion methodology, testing/validation, and documentation governance.
+
+## Extended Public-Safe Coverage
+
+The same reviewed private source commit also supports contract-level documentation for bounded network/failure resilience, operator-control ownership, microstructure methodology, external-data provenance, and later options/data-build workflows. Provider-specific operational configuration, exact privileged commands, current recorder/source state, storage topology, calibration/budgets, and current research results remain outside the public snapshot.
 
 ## Publication Boundary
 
-This repository is not a source-code mirror. It intentionally excludes implementation source, credentials, production state/logs, current strategies/candidates/rankings, exact production thresholds, infrastructure topology, exact recovery commands, and private operational evidence.
+This repository is not a source-code mirror. It intentionally excludes implementation source, credentials, production state/logs, current strategies/candidates/rankings, exact production thresholds, infrastructure topology, provider credentials/private endpoints, exact privileged/recovery commands, current recorder/source state, exact acquisition/sampling/calibration budgets, current dataset-build state, and private operational evidence.
 
 ## Historical Note
 

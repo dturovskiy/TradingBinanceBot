@@ -3,7 +3,7 @@
 ## 1. Objectif
 <!-- parity-key: operator.scope -->
 
-Le runtime possède des surfaces de notification et de contrôle destinées aux opérateurs, notamment des interactions de type messaging/panel. Cette page décrit des contrats de contrôle stables et public-safe, pas la syntaxe privée des commandes ni l'état opérationnel courant.
+Le runtime possède des surfaces de notification et de contrôle destinées aux opérateurs, notamment des interactions Telegram-facing de type messaging/panel. Cette page décrit des contrats de contrôle stables et public-safe, pas la syntaxe privée des commandes ni l'état opérationnel courant.
 
 ## 2. Limite d'autorisation
 <!-- parity-key: operator.auth -->

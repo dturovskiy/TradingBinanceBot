@@ -40,7 +40,10 @@ Confirm the patch contains no:
 - mount/storage or DNS/network topology;
 - current strategy/candidate names, rankings, or active research status;
 - exact production limits or thresholds;
-- exact operational recovery commands or incident procedures;
+- exact privileged/operator recovery commands or incident procedures;
+- provider credentials/private endpoints, current source availability, or account configuration;
+- exact acquisition/sampling/calibration cadence, budgets, or current recorder enablement;
+- live order-book snapshots, current dataset-build status, or current provider/source-health state;
 - private implementation source when contract-level prose is sufficient;
 - private evidence identifiers/hashes unnecessary for documentation provenance;
 - transient machine/environment details or current operational/research state.
@@ -51,6 +54,7 @@ The reviewed private Git commit SHA recorded in the sync manifest is an approved
 
 - EN, UA, and FR expose the same required paths.
 - Corresponding pages preserve the same section hierarchy and factual claims.
+- Topic families using semantic `parity-key` markers preserve the same ordered marker set across EN/UA/FR.
 - Corresponding pages keep the same security boundary and navigation targets.
 - `README.md` and `docs/index.md` link to all current public topic families.
 

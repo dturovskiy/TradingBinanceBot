@@ -3,7 +3,7 @@
 ## 1. Призначення
 <!-- parity-key: operator.scope -->
 
-Runtime має операторські surfaces для сповіщень і керування, зокрема messaging/panel-style взаємодію. Ця сторінка описує стабільні public-safe контракти керування, а не приватний command syntax чи поточний operational state.
+Runtime має операторські surfaces для сповіщень і керування, зокрема Telegram-facing messaging/panel-style взаємодію. Ця сторінка описує стабільні public-safe контракти керування, а не приватний command syntax чи поточний operational state.
 
 ## 2. Межа авторизації
 <!-- parity-key: operator.auth -->

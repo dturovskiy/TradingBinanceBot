@@ -12,6 +12,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Durable execution/recovery contract pages in EN/UA/FR.
 - Evidence/provenance contract pages in EN/UA/FR.
+- Reliability/failure-handling and operator-control contract pages in EN/UA/FR.
+- Public module-family reference pages in EN/UA/FR without mirroring the private source tree.
+- Microstructure/execution-quality, external data-source, and preregistered options/dataset-build methodology pages in EN/UA/FR.
 
 #### Changed
 
@@ -23,10 +26,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Expanded logging/observability guidance with structured telemetry, activation/profile, freshness/expected-idle, provenance, and non-mutating observation semantics.
 - Documented scanner isolation, the no-order boundary, bounded/failure-isolated research work, and fail-closed promotion evidence requirements.
 - Clarified layered/grouped portfolio-risk ownership and reason/model separation without publishing thresholds or current exposure.
+- Expanded README/index/overview navigation to the full curated public-safe topic set.
+- Added semantic `parity-key` validation for new multilingual topic families while retaining human semantic review.
+- Expanded scope/sync/release governance for provider, operator-control, microstructure, reliability, and offline dataset-workflow safety boundaries.
 
 #### Security
 
-- Published no private implementation source, runtime/trading state, current strategies/candidates/rankings, production thresholds, infrastructure topology, exact recovery commands, or private operational evidence.
+- Published no private implementation source, runtime/trading state, current strategies/candidates/rankings, production thresholds, infrastructure topology, exact privileged/recovery commands, provider credentials/private endpoints, current recorder/source state, exact acquisition/sampling/calibration budgets, or private operational evidence.
 - The reviewed private Git SHA is recorded only as approved documentation provenance.
 
 ### Provenance

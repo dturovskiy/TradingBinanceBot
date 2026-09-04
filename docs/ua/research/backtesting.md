@@ -45,4 +45,7 @@ Scanner output є evidence/input, а не promotion authorization. Сама ли
 ## 11. Пов’язані матеріали
 
 - [Контракти доказової бази](evidence_contracts.md)
+- [Дослідження мікроструктури](microstructure.md)
+- [Options / Dataset Builds](options_data.md)
+- [Контракти джерел даних](data_sources.md)
 - [Тестування](../testing/testing_guide.md)

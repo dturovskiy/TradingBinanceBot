@@ -3,7 +3,7 @@
 ## 1. Purpose
 <!-- parity-key: operator.scope -->
 
-The runtime has operator-facing notification and control surfaces, including messaging/panel-style interaction. This page documents stable public-safe control contracts rather than private command syntax or current operational state.
+The runtime has operator-facing notification and control surfaces, including Telegram-facing messaging/panel-style interaction. This page documents stable public-safe control contracts rather than private command syntax or current operational state.
 
 ## 2. Authorization Boundary
 <!-- parity-key: operator.auth -->

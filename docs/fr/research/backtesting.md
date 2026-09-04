@@ -45,4 +45,7 @@ Ne publiez pas les noms actuels de candidats, les résultats actuels de stratég
 ## 11. Guides associés
 
 - [Contrats de preuve](evidence_contracts.md)
+- [Recherche en microstructure](microstructure.md)
+- [Options / Dataset Builds](options_data.md)
+- [Contrats de sources de données](data_sources.md)
 - [Tests](../testing/testing_guide.md)

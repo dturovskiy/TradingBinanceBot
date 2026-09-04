@@ -15,6 +15,7 @@ This map describes stable public-safe ownership domains, not the full private so
 | Exchange / API | External exchange reads and order-facing adapters |
 | Portfolio risk | Layered/grouped portfolio risk policy, reason/model separation, and fail-safe containment |
 | Monitoring / observability | Health, metrics, telemetry, reports |
+| Reliability / failure handling | Bounded failure handling, secret-safe diagnostics, fail-safe containment |
 | Operator control | Notifications and operator-facing controls |
 | Persistence / config | Runtime persistence and configuration ownership |
 | Backtesting / replay | Event-time replay and execution-parity methodology |
@@ -26,7 +27,7 @@ This map describes stable public-safe ownership domains, not the full private so
 2. Persisted/mutable state is loaded.
 3. Required execution-state reconciliation runs before normal readiness.
 4. Normal trading orchestration proceeds only when required state is consistent.
-5. Exchange/API, risk, persistence, and observability remain separate ownership domains.
+5. Exchange/API, risk, persistence, observability, and reliability remain separate ownership domains.
 
 This is ownership and safety ordering, not an exact startup implementation sequence.
 
@@ -52,7 +53,10 @@ This page does not publish exact journal names/formats, write ordering, crash wi
 
 ## 7. Related Guides
 
+- [Module-Family Reference](module_reference.md)
 - [Execution / Recovery](execution_recovery.md)
+- [Reliability](../operations/reliability.md)
+- [Operator Control](../operations/operator_control.md)
 - [Research / Backtesting](../research/backtesting.md)
 - [Evidence Contracts](../research/evidence_contracts.md)
 - [Testing](../testing/testing_guide.md)
