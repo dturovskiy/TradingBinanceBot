@@ -1,53 +1,53 @@
-# Мапа Проєкту (UA)
+# Карта проєкту (UA)
 
-## 1. Public Documentation Boundary
+## 1. Межі публічної документації
 
-Ця мапа описує стабільні public-safe ownership domains, а не повне приватне source tree.
+Ця карта описує стабільні домени відповідальності, безпечні для публічної документації, а не повне дерево приватного вихідного коду.
 
-## 2. Runtime Ownership Domains
+## 2. Домени відповідальності середовища виконання
 
-| Domain | Public-safe responsibility |
+| Домен | Відповідальність у публічній документації |
 | --- | --- |
-| Bootstrap / lifecycle | Startup, shutdown, initialization, readiness orchestration |
-| Mutable runtime state | Coordinated in-memory runtime context |
-| Trading orchestration | Iteration sequencing and trading-flow coordination |
-| Durable execution state / recovery | Persisted execution intent/state, restart reconciliation, readiness gating |
-| Exchange / API | External exchange reads and order-facing adapters |
-| Portfolio risk | Portfolio-level risk policy and containment |
-| Monitoring / observability | Health, metrics, telemetry, reports |
-| Operator control | Notifications and operator-facing controls |
-| Persistence / config | Runtime persistence and configuration ownership |
-| Backtesting / replay | Event-time replay and execution-parity methodology |
-| Research / evidence | Dataset identity, provenance, validation and promotion evidence |
+| Ініціалізація / життєвий цикл | Запуск, завершення роботи, ініціалізація та оркестрація готовності |
+| Змінюваний стан виконання | Узгоджений контекст виконання в пам’яті |
+| Оркестрація торгівлі | Послідовність ітерацій і координація торгового потоку |
+| Стійкий стан виконання / відновлення | Збережені намір і стан виконання, узгодження після перезапуску та контроль готовності |
+| Біржа / API | Читання зовнішнього стану біржі та адаптери для роботи з ордерами |
+| Портфельний ризик | Політика ризику на рівні портфеля та його обмеження |
+| Моніторинг / спостережуваність | Стан здоров’я, метрики, телеметрія та звіти |
+| Керування оператором | Сповіщення та засоби керування для оператора |
+| Збереження стану / конфігурація | Відповідальність за збереження стану виконання та конфігурацію |
+| Бектестинг / replay | Відтворення за часом подій і методологія паритету виконання |
+| Дослідження / доказова база | Ідентичність наборів даних, provenance, валідація та докази для promotion |
 
-## 3. High-Level Runtime Flow
+## 3. Високорівневий потік виконання
 
-1. Bootstrap and lifecycle initialize required domains.
-2. Persisted/mutable state is loaded.
-3. Required execution-state reconciliation runs before normal readiness.
-4. Normal trading orchestration proceeds only when required state is consistent.
-5. Exchange/API, risk, persistence, and observability remain separate ownership domains.
+1. Ініціалізація та життєвий цикл запускають потрібні домени.
+2. Завантажується збережений і змінюваний стан.
+3. До переходу в нормальний стан готовності виконується потрібне узгодження стану виконання.
+4. Звичайна оркестрація торгівлі продовжується лише тоді, коли потрібний стан узгоджено.
+5. Біржа/API, ризик, збереження стану та спостережуваність залишаються окремими доменами відповідальності.
 
-## 4. Durable Execution State / Recovery
+## 4. Стійкий стан виконання / відновлення
 
-Order execution is separate from durable state ownership. A restart can require reconciliation between external exchange state and locally managed state. Recovery must be deterministic and idempotent, unresolved state fails closed, and recovery itself does not authorize fresh order placement.
+Виконання ордерів відокремлене від відповідальності за стійкий стан. Після перезапуску може знадобитися узгодження зовнішнього стану біржі з локально керованим станом. Відновлення має бути детермінованим та ідемпотентним, невирішений стан обробляється за принципом fail-closed, а саме відновлення не надає дозволу на розміщення нових ордерів.
 
-See [Execution / Recovery](execution_recovery.md).
+Див. [Виконання / відновлення](execution_recovery.md).
 
-## 5. Research / Replay Boundary
+## 5. Межа досліджень / replay
 
-Replay uses explicit event time and should share material domain semantics with live execution where appropriate. Adapters may remain isolated, but replay must not silently bypass important live-domain contracts.
+Replay використовує явно визначений час подій і, де це доречно, має спільно використовувати суттєву доменну семантику з live-виконанням. Адаптери можуть залишатися ізольованими, але replay не повинен непомітно обходити важливі контракти live-домену.
 
-See [Research / Backtesting](../research/backtesting.md).
+Див. [Дослідження / бектестинг](../research/backtesting.md).
 
-## 6. Public-Safety Limits
+## 6. Обмеження публічної безпеки
 
-This page does not publish exact journal names/formats, write ordering, crash windows, recovery commands, live reconciliation procedures, production thresholds, current operational state, or private topology.
+Ця сторінка не публікує точні назви або формати журналів, порядок запису, вікна збоїв, команди відновлення, процедури live-узгодження, production-пороги, поточний операційний стан або приватну топологію.
 
-## 7. Related Guides
+## 7. Пов’язані матеріали
 
-- [Execution / Recovery](execution_recovery.md)
-- [Research / Backtesting](../research/backtesting.md)
-- [Evidence Contracts](../research/evidence_contracts.md)
-- [Testing](../testing/testing_guide.md)
-- [Logging and Artifacts](../operations/logging.md)
+- [Виконання / відновлення](execution_recovery.md)
+- [Дослідження / бектестинг](../research/backtesting.md)
+- [Контракти доказової бази](../research/evidence_contracts.md)
+- [Тестування](../testing/testing_guide.md)
+- [Логування та артефакти](../operations/logging.md)

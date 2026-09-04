@@ -1,34 +1,34 @@
-# Durable Execution State та Recovery (UA)
+# Стійкий стан виконання та відновлення (UA)
 
-## 1. Purpose
+## 1. Призначення
 
-Trading systems can observe externally executed state while also maintaining local managed state. Durable execution state provides a restart-safe contract for resolving that boundary.
+Торгові системи можуть спостерігати стан, виконаний у зовнішній системі, і водночас підтримувати локально керований стан. Стійкий стан виконання задає контракт, безпечний до перезапусків, для узгодження цієї межі.
 
-## 2. External and Local State
+## 2. Зовнішній і локальний стан
 
-Exchange state and local managed state are distinct sources of information. A process restart, ambiguous response, or partial local update can require reconciliation before normal operation resumes.
+Стан біржі та локально керований стан є різними джерелами інформації. Перезапуск процесу, неоднозначна відповідь або часткове локальне оновлення можуть вимагати узгодження до відновлення нормальної роботи.
 
-## 3. Reconciliation Before Readiness
+## 3. Узгодження до готовності
 
-Required unresolved execution state is reconciled before the normal trading readiness gate opens. If required consistency cannot be established, the system fails closed rather than assuming safe state.
+Обов’язковий невирішений стан виконання узгоджується до відкриття звичайного gate готовності до торгівлі. Якщо потрібну узгодженість встановити неможливо, система працює за принципом fail-closed, а не припускає, що стан безпечний.
 
-## 4. Idempotent Restart Recovery
+## 4. Ідемпотентне відновлення після перезапуску
 
-Recovery should be deterministic and idempotent: repeating the same recovery work over the same durable evidence must not duplicate state application or create fresh trading actions.
+Відновлення має бути детермінованим та ідемпотентним: повторення тієї самої процедури відновлення над тією самою стійкою доказовою базою не повинно дублювати застосування стану або створювати нові торгові дії.
 
-## 5. Recovery Is Not Order Placement
+## 5. Відновлення не є розміщенням ордерів
 
-Recovery may inspect and reconcile existing execution state, but it does not itself authorize new order placement. Fresh trading remains behind the normal execution and readiness contracts.
+Відновлення може перевіряти й узгоджувати наявний стан виконання, але саме по собі не надає дозволу на розміщення нових ордерів. Нові торгові дії залишаються за звичайними контрактами виконання та готовності.
 
-## 6. Testing Expectations
+## 6. Очікування від тестування
 
-Public testing expectations include restart/recovery tests, persistence and atomic-write tests, ambiguity/failure-path tests, idempotency checks, reconciliation/readiness tests, and tests proving that recovery does not submit fresh orders.
+Публічні очікування від тестування охоплюють тести перезапуску/відновлення, тести збереження стану й atomic write, тести неоднозначностей і failure paths, перевірки ідемпотентності, тести узгодження/готовності та тести, які доводять, що відновлення не надсилає нових ордерів.
 
-## 7. Public-Safety Boundary
+## 7. Межа публічної безпеки
 
-Public documentation intentionally omits exact storage paths, journal formats, write ordering, crash windows, operational incident details, live reconciliation mechanics, and exact recovery commands.
+Публічна документація навмисно не містить точних шляхів зберігання, форматів журналів, порядку запису, вікон збоїв, деталей операційних інцидентів, механіки live-узгодження та точних команд відновлення.
 
-## 8. Related Guides
+## 8. Пов’язані матеріали
 
-- [Project Map](project_map.md)
-- [Testing](../testing/testing_guide.md)
+- [Карта проєкту](project_map.md)
+- [Тестування](../testing/testing_guide.md)

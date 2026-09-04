@@ -1,13 +1,12 @@
 # Public Sync Manifest
 
-## Prepared Public-Safe Snapshot
+## Reviewed Public-Safe Snapshot
 
 - Documentation review date: `2026-09-04`
 - Reviewed private source commit: `05a4214895111bcdbb7960223b4af232c066c48c`
 - Private source commit date: `2026-09-03`
 - Previous public sync: `2026-05-30`
 - Previous exact private source SHA: `not recorded`
-- Current public sync status: `prepared for review; not yet merged`
 
 ## Source Binding Rule
 
@@ -15,7 +14,7 @@ This and future documentation syncs are commit-bound rather than date-only. The 
 
 ## Curated Contract Families
 
-This prepared sync covers stable public-safe contracts for architecture ownership, durable execution/recovery, research/backtesting methodology, evidence/provenance methodology, testing taxonomy, and documentation governance.
+This reviewed snapshot covers stable public-safe contracts for architecture ownership, durable execution/recovery, research/backtesting methodology, evidence/provenance methodology, testing taxonomy, and documentation governance.
 
 ## Publication Boundary
 

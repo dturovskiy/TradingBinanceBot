@@ -1,46 +1,46 @@
-# Методологія Research і Backtesting (UA)
+# Методологія досліджень і бектестингу (UA)
 
-## 1. Purpose
+## 1. Призначення
 
-Research and replay should produce reproducible, time-safe evidence without becoming a second uncontrolled trading implementation.
+Дослідження та replay мають створювати відтворювану й безпечну щодо часу доказову базу, не перетворюючись на другу неконтрольовану реалізацію торгової логіки.
 
-## 2. Event-Time Semantics
+## 2. Семантика часу подій
 
-Decisions operate on explicitly defined event time. Data that was not available at decision time must not influence that decision.
+Рішення працюють із явно визначеним event time. Дані, які не були доступні на момент рішення, не повинні впливати на це рішення.
 
-## 3. Deterministic Replay
+## 3. Детермінований replay
 
-The same inputs, contract versions, and deterministic configuration should produce reproducible replay outputs.
+Однакові вхідні дані, версії контрактів і детермінована конфігурація мають давати відтворювані результати replay.
 
-## 4. No-Future-Leakage
+## 4. Відсутність витоку майбутніх даних
 
-Decision-time inputs are separated from later observation/outcome data. Future outcomes must not leak into earlier feature construction, ranking, or decisions.
+Вхідні дані на момент рішення відокремлюються від пізніших спостережень і результатів. Майбутні результати не повинні потрапляти в побудову ознак, ранжування або рішення, що відбуваються раніше.
 
-## 5. Live / Replay Parity
+## 5. Паритет live / replay
 
-Shared semantics should be reused where appropriate. Adapters may stay isolated, but replay must not silently bypass material live-domain execution, risk, or validation contracts.
+Спільну семантику слід повторно використовувати там, де це доречно. Адаптери можуть залишатися ізольованими, але replay не повинен непомітно обходити суттєві live-контракти виконання, ризику або валідації.
 
-## 6. Dataset Identity and Provenance
+## 6. Ідентичність набору даних і provenance
 
-Source provenance, decision provenance, and outcome provenance are distinct concepts. Deterministic identities/content binding reduce accidental dataset or evidence mixing.
+Provenance джерела, рішення та результату — це різні поняття. Детерміновані ідентичності та прив’язка до вмісту зменшують ризик випадкового змішування наборів даних або доказової бази.
 
-## 7. Independent-Sample Semantics
+## 7. Семантика незалежних вибірок
 
-Rows, horizons, or repeated observations are not automatically independent samples. Independence must follow an explicit methodology appropriate to the evidence.
+Рядки, горизонти або повторні спостереження не є автоматично незалежними вибірками. Незалежність має визначатися явною методологією, що відповідає конкретній доказовій базі.
 
-## 8. Time-Safe Split Methodology
+## 8. Методологія часобезпечного розбиття
 
-Use explicit train/review/holdout boundaries. Apply purge/embargo where required to prevent boundary leakage. A one-shot holdout is not a tuning surface.
+Використовуйте явні межі train/review/holdout. За потреби застосовуйте purge/embargo, щоб запобігти витоку через межі. Одноразовий holdout не є поверхнею для tuning.
 
-## 9. Promotion Firewall
+## 9. Бар’єр promotion
 
-Research evidence alone does not authorize rollout. Separate dataset-integrity, execution/domain-parity, and other required validation layers can block promotion.
+Сама лише дослідницька доказова база не надає дозволу на rollout. Окремі рівні перевірки цілісності набору даних, паритету execution/domain та інші обов’язкові рівні валідації можуть блокувати promotion.
 
-## 10. Public-Safety Boundary
+## 10. Межа публічної безпеки
 
-Do not publish current candidate names, current strategy results, private dataset hashes, current gate PASS/FAIL state, or operational rollout state.
+Не публікуйте поточні назви кандидатів, поточні результати стратегій, приватні хеші наборів даних, поточний стан gate PASS/FAIL або операційний стан rollout.
 
-## 11. Related Guides
+## 11. Пов’язані матеріали
 
-- [Evidence Contracts](evidence_contracts.md)
-- [Testing](../testing/testing_guide.md)
+- [Контракти доказової бази](evidence_contracts.md)
+- [Тестування](../testing/testing_guide.md)

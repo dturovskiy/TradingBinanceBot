@@ -1,46 +1,47 @@
-# Документація Trading Runtime і Research (UA)
+# Документація середовища виконання та досліджень (UA)
 
-## 1. Межа Репозиторію
+## 1. Межі репозиторію
 
-`TradingBinanceBot` документує приватну trading/runtime/research платформу з окремими доменами execution, risk, recovery, replay, evidence та observability. Це не дзеркало source code.
+`TradingBinanceBot` документує приватну платформу для торгівлі, виконання та досліджень з окремими доменами виконання, ризику, відновлення, replay, доказової бази та спостережуваності. Це не дзеркало вихідного коду.
 
-## 2. Форма Runtime
+## 2. Структура середовища виконання
 
-Стабільний public ownership розділено між bootstrap/lifecycle, mutable runtime state, trading orchestration, durable execution state/recovery, exchange/API access, portfolio risk, monitoring/observability, operator control, persistence/configuration, backtesting/replay та research/evidence.
+Стабільні публічні зони відповідальності розділено між ініціалізацією/життєвим циклом, змінюваним станом виконання, оркестрацією торгівлі, стійким станом виконання/відновленням, доступом до біржі/API, портфельним ризиком, моніторингом/спостережуваністю, керуванням оператором, збереженням стану/конфігурацією, бектестингом/replay та дослідженнями/доказовою базою.
 
-## 3. Execution і Recovery
+## 3. Виконання та відновлення
 
-Durable execution state може вимагати reconciliation до normal trading readiness. Recovery є deterministic/idempotent, unresolved state працює fail-closed, а recovery саме по собі не авторизує нове розміщення ордерів.
+Стійкий стан виконання може вимагати узгодження до переходу в нормальний стан готовності до торгівлі. Відновлення є детермінованим та ідемпотентним, невирішений стан обробляється за принципом fail-closed, а саме відновлення не надає дозволу на розміщення нових ордерів.
 
-Читайте: [Execution / Recovery](architecture/execution_recovery.md).
+Читайте: [Виконання / відновлення](architecture/execution_recovery.md).
 
-## 4. Research і Evidence
+## 4. Дослідження та доказова база
 
-Research використовує explicit event-time semantics, deterministic replay, no-future-leakage, dataset/provenance identity, time-safe splits і promotion evidence, яке залишається окремим від rollout authorization.
+Дослідження використовують явну семантику event time, детермінований replay, правила відсутності витоку майбутніх даних, ідентичність набору даних і provenance, часобезпечні розбиття та докази для promotion, які залишаються окремими від дозволу на rollout.
 
-Читайте: [Research / Backtesting](research/backtesting.md) і [Evidence Contracts](research/evidence_contracts.md).
+Читайте: [Дослідження / бектестинг](research/backtesting.md) і [Контракти доказової бази](research/evidence_contracts.md).
 
-## 5. Testing
+## 5. Тестування
 
-Testing охоплює unit, integration, property-based, parametrized regression, contract, persistence/atomic-write, order-state/recovery, failure-path/network resilience, replay/parity, research/provenance, observability, risk/API/execution та documentation validation.
+Тестування охоплює модульні, інтеграційні, property-based, параметризовані регресійні, контрактні тести, тести збереження стану/atomic write, стану ордерів/відновлення, failure paths/стійкості мережі, replay/паритету, досліджень/provenance, спостережуваності, ризику/API/виконання та валідацію документації.
 
 ## 6. Provenance
 
-- Дата review: `2026-09-04`.
-- Reviewed private source commit: `05a4214895111bcdbb7960223b4af232c066c48c`.
-- Попередній public sync: `2026-05-30`.
-- Поточний статус: prepared for review, not yet merged.
+- Дата перегляду документації: `2026-09-04`.
+- Переглянутий commit приватного джерела: `05a4214895111bcdbb7960223b4af232c066c48c`.
+- Дата commit приватного джерела: `2026-09-03`.
+- Попередня публічна синхронізація: `2026-05-30`.
+- Попередній точний SHA приватного джерела: `not recorded`.
 
-## 7. Індекс Документації
+## 7. Індекс документації
 
 - [Архітектура](architecture/project_map.md)
-- [Execution / Recovery](architecture/execution_recovery.md)
-- [Research / Backtesting](research/backtesting.md)
-- [Evidence Contracts](research/evidence_contracts.md)
-- [Testing](testing/testing_guide.md)
-- [Logging and Artifacts](operations/logging.md)
-- [Public Sync Manifest](../shared/public_sync_manifest.md)
+- [Виконання / відновлення](architecture/execution_recovery.md)
+- [Дослідження / бектестинг](research/backtesting.md)
+- [Контракти доказової бази](research/evidence_contracts.md)
+- [Тестування](testing/testing_guide.md)
+- [Логування та артефакти](operations/logging.md)
+- [Маніфест публічної синхронізації](../shared/public_sync_manifest.md)
 
-## 8. Public-Safety Boundary
+## 8. Межа публічної безпеки
 
-Не публікуйте private source, runtime/trading state, current strategies/candidates/rankings, production thresholds, infrastructure topology, exact recovery commands або private operational evidence.
+Не публікуйте приватний вихідний код, стан runtime/торгівлі, поточні стратегії, кандидатів або рейтинги, production-пороги, топологію інфраструктури, точні команди відновлення чи приватну операційну доказову базу.

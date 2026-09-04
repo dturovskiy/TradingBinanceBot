@@ -1,41 +1,41 @@
-# Guide de Tests (FR)
+# Guide de tests (FR)
 
-## 1. Scope
+## 1. Périmètre
 
-Public documentation intentionally does not freeze an exact test count; collection size changes over time.
+La documentation publique ne fige volontairement pas un nombre exact de tests ; la taille de la collection évolue avec le temps.
 
-## 2. Testing Taxonomy
+## 2. Taxonomie des tests
 
-Current public-safe categories include:
+Les catégories actuellement adaptées à la documentation publique comprennent :
 
-- unit tests;
-- integration tests;
-- property-based tests / Hypothesis;
-- parametrized regression tests;
-- contract tests;
-- persistence / atomic-write tests;
-- order-state / recovery tests;
-- failure-path / network resilience tests;
-- replay / parity tests;
-- research / provenance tests;
-- observability tests;
-- risk / API / execution tests.
+- tests unitaires ;
+- tests d’intégration ;
+- tests property-based / Hypothesis ;
+- tests de régression paramétrés ;
+- tests de contrat ;
+- tests de persistance / écriture atomique ;
+- tests d’état des ordres / récupération ;
+- tests de failure paths / résilience réseau ;
+- tests de replay / parité ;
+- tests de recherche / provenance ;
+- tests d’observabilité ;
+- tests de risque / API / exécution.
 
-## 3. Validation Pipeline Categories
+## 3. Catégories du pipeline de validation
 
-Where applicable, validation combines static/type checks, configuration/fail-safe checks, pytest, and benchmark/performance checks. Public docs do not claim a current enforced coverage percentage unless separately reverified.
+Lorsque c’est pertinent, la validation combine des contrôles statiques/de types, des contrôles de configuration/fail-safe, pytest et des contrôles benchmark/performance. La documentation publique ne revendique pas un pourcentage de coverage actuellement imposé sans nouvelle vérification spécifique.
 
-## 4. Execution / Recovery Testing
+## 4. Tests d’exécution / récupération
 
-Validate durable-state persistence, restart reconciliation, idempotent recovery, fail-closed unresolved state, readiness gating, and the invariant that recovery does not submit fresh orders.
+Validez la persistance de l’état durable, la réconciliation après redémarrage, la récupération idempotente, le traitement fail-closed des états non résolus, le gate de disponibilité et l’invariant selon lequel la récupération ne soumet pas de nouveaux ordres.
 
-## 5. Research / Replay Testing
+## 5. Tests de recherche / replay
 
-Validate event-time semantics, no-future-leakage, deterministic replay, time-safe splits, dataset/provenance binding, independent-sample handling, and execution/domain parity.
+Validez la sémantique de l’event time, l’absence de fuite d’informations futures, le replay déterministe, les découpages respectant le temps, la liaison du jeu de données et de la provenance, le traitement des échantillons indépendants et la parité execution/domain.
 
-## 6. Documentation Validation
+## 6. Validation de la documentation
 
-Run:
+Exécutez :
 
 ```bash
 python3 scripts/docs/check_language_parity.py
@@ -43,8 +43,8 @@ bash scripts/docs/validate_links.sh
 git diff --check
 ```
 
-When Bash execution is blocked by tool policy, run equivalent internal Markdown-link validation and record that limitation.
+Lorsque l’exécution Bash est bloquée par la politique des outils, effectuez une validation interne équivalente des liens Markdown et consignez cette limitation.
 
-## 7. Public-Safety Boundary
+## 7. Limite de publication sûre
 
-Generated test/research evidence, private paths, current strategy/candidate results, and operational runtime artifacts are not published here.
+Les preuves générées par les tests ou la recherche, les chemins privés, les résultats actuels de stratégies/candidats et les artefacts opérationnels du runtime ne sont pas publiés ici.

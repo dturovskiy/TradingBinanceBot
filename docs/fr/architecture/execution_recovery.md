@@ -1,34 +1,34 @@
-# Durable Execution State et Recovery (FR)
+# État d’exécution durable et récupération (FR)
 
-## 1. Purpose
+## 1. Objectif
 
-Trading systems can observe externally executed state while also maintaining local managed state. Durable execution state provides a restart-safe contract for resolving that boundary.
+Les systèmes de trading peuvent observer un état exécuté à l’extérieur tout en maintenant un état géré localement. L’état d’exécution durable fournit un contrat résistant aux redémarrages pour résoudre cette frontière.
 
-## 2. External and Local State
+## 2. État externe et état local
 
-Exchange state and local managed state are distinct sources of information. A process restart, ambiguous response, or partial local update can require reconciliation before normal operation resumes.
+L’état de l’exchange et l’état géré localement sont des sources d’information distinctes. Un redémarrage de processus, une réponse ambiguë ou une mise à jour locale partielle peuvent imposer une réconciliation avant la reprise du fonctionnement normal.
 
-## 3. Reconciliation Before Readiness
+## 3. Réconciliation avant la disponibilité
 
-Required unresolved execution state is reconciled before the normal trading readiness gate opens. If required consistency cannot be established, the system fails closed rather than assuming safe state.
+Tout état d’exécution non résolu mais requis est réconcilié avant l’ouverture du gate normal de disponibilité du trading. Si la cohérence requise ne peut pas être établie, le système fonctionne en fail-closed au lieu de supposer que l’état est sûr.
 
-## 4. Idempotent Restart Recovery
+## 4. Récupération idempotente après redémarrage
 
-Recovery should be deterministic and idempotent: repeating the same recovery work over the same durable evidence must not duplicate state application or create fresh trading actions.
+La récupération doit être déterministe et idempotente : répéter la même opération de récupération sur les mêmes preuves durables ne doit ni appliquer deux fois le même état ni créer de nouvelles actions de trading.
 
-## 5. Recovery Is Not Order Placement
+## 5. La récupération ne place pas de nouveaux ordres
 
-Recovery may inspect and reconcile existing execution state, but it does not itself authorize new order placement. Fresh trading remains behind the normal execution and readiness contracts.
+La récupération peut inspecter et réconcilier un état d’exécution existant, mais elle n’autorise pas à elle seule le placement de nouveaux ordres. Toute nouvelle activité de trading reste soumise aux contrats normaux d’exécution et de disponibilité.
 
-## 6. Testing Expectations
+## 6. Attentes en matière de tests
 
-Public testing expectations include restart/recovery tests, persistence and atomic-write tests, ambiguity/failure-path tests, idempotency checks, reconciliation/readiness tests, and tests proving that recovery does not submit fresh orders.
+Les attentes publiables en matière de tests comprennent les tests de redémarrage/récupération, les tests de persistance et d’écriture atomique, les tests d’ambiguïté et de failure paths, les contrôles d’idempotence, les tests de réconciliation/disponibilité et les tests démontrant que la récupération ne soumet pas de nouveaux ordres.
 
-## 7. Public-Safety Boundary
+## 7. Limite de publication sûre
 
-Public documentation intentionally omits exact storage paths, journal formats, write ordering, crash windows, operational incident details, live reconciliation mechanics, and exact recovery commands.
+La documentation publique omet volontairement les chemins de stockage exacts, les formats de journaux, l’ordre des écritures, les fenêtres de panne, les détails d’incidents opérationnels, les mécanismes de réconciliation live et les commandes exactes de récupération.
 
-## 8. Related Guides
+## 8. Guides associés
 
-- [Project Map](project_map.md)
-- [Testing](../testing/testing_guide.md)
+- [Carte du projet](project_map.md)
+- [Tests](../testing/testing_guide.md)

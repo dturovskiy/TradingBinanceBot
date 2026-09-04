@@ -26,10 +26,11 @@ Testing includes unit, integration, property-based, parametrized regression, con
 
 ## 6. Provenance
 
-- Review date: `2026-09-04`.
+- Documentation review date: `2026-09-04`.
 - Reviewed private source commit: `05a4214895111bcdbb7960223b4af232c066c48c`.
+- Private source commit date: `2026-09-03`.
 - Previous public sync: `2026-05-30`.
-- Current status: prepared for review, not yet merged.
+- Previous exact private source SHA: `not recorded`.
 
 ## 7. Documentation Index
 

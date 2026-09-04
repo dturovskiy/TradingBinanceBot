@@ -33,11 +33,10 @@ Public documentation-only repository for a private trading/runtime/research impl
 - [Public Sync Manifest](docs/shared/public_sync_manifest.md)
 - [Public Release Checklist](docs/shared/public_release_checklist.md)
 
-## Prepared Sync Provenance
+## Reviewed Sync Provenance
 
 - Review date: `2026-09-04`
 - Reviewed private source commit: `05a4214895111bcdbb7960223b4af232c066c48c`
 - Private source commit date: `2026-09-03`
 - Previous public sync: `2026-05-30`
 - Previous exact private source SHA: `not recorded`
-- Status: **prepared for review; not yet merged**

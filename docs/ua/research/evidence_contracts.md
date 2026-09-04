@@ -1,46 +1,46 @@
-# Контракти Evidence та Provenance (UA)
+# Контракти доказової бази та provenance (UA)
 
-## 1. Principle
+## 1. Принцип
 
-**A research result is not sufficient for promotion.**
+**Результату дослідження недостатньо для promotion.**
 
 ## 2. Provenance
 
-Evidence should identify the role and origin of source, decision, and outcome material without conflating them.
+Доказова база має визначати роль і походження матеріалів джерела, рішення та результату, не змішуючи ці поняття.
 
-## 3. Deterministic Artifact Identity
+## 3. Детермінована ідентичність артефактів
 
-Artifacts should have deterministic identities derived from their intended contract and contents so repeated generation can be compared reliably.
+Артефакти повинні мати детерміновані ідентичності, виведені з їхнього призначеного контракту та вмісту, щоб результати повторної генерації можна було надійно порівнювати.
 
-## 4. Content-Bound Evidence
+## 4. Доказова база, прив’язана до вмісту
 
-Evidence used for validation should be bound to the content it represents. Mutation or mismatched binding should fail closed rather than silently join.
+Доказова база, яку використовують для валідації, має бути прив’язана до вмісту, який вона представляє. Мутація або невідповідна прив’язка повинні завершуватися за принципом fail-closed, а не непомітно об’єднуватися.
 
-## 5. Candidate and Dataset Binding
+## 5. Прив’язка кандидата й набору даних
 
-Candidate/configuration identity and dataset identity are conceptually distinct and should be explicitly bound when an evaluation depends on both.
+Ідентичність кандидата/конфігурації та ідентичність набору даних концептуально різні й мають бути явно пов’язані, коли оцінювання залежить від обох.
 
-## 6. Evidence Classes
+## 6. Класи доказової бази
 
-Measured, synthetic, and counterfactual evidence are different classes. They must not be silently merged as if they carried identical empirical meaning.
+Виміряна, синтетична та контрфактична доказова база належать до різних класів. Їх не можна непомітно об’єднувати так, ніби вони мають однакове емпіричне значення.
 
-## 7. Independent Samples and Aggregation
+## 7. Незалежні вибірки й агрегація
 
-Aggregation must respect independent-sample semantics. Duplicate or aliased evidence should not inflate sample strength, and ambiguous joins should fail closed.
+Агрегація має поважати семантику незалежних вибірок. Дубльована доказова база або та сама доказова база під різними ідентифікаторами не повинна штучно збільшувати силу вибірки, а неоднозначні об’єднання мають завершуватися за принципом fail-closed.
 
-## 8. Promotion Evidence vs Edge Evidence
+## 8. Докази для promotion та докази edge
 
-Evidence that supports a statistical/market edge is not equivalent to evidence required for promotion. Promotion can require additional integrity, safety, execution, and domain validation.
+Доказова база, що підтверджує статистичний або ринковий edge, не є рівнозначною доказовій базі, потрібній для promotion. Promotion може вимагати додаткової валідації цілісності, безпеки, виконання та домену.
 
-## 9. Execution / Domain Parity
+## 9. Паритет execution / domain
 
-Execution/domain parity is a separate validation layer intended to catch cases where replay or research bypasses material runtime semantics.
+Паритет execution/domain — це окремий рівень валідації, призначений для виявлення випадків, коли replay або дослідження обходять суттєву семантику runtime.
 
-## 10. Public-Safety Boundary
+## 10. Межа публічної безпеки
 
-This public contract does not reproduce internal schema fields, current evidence IDs/hashes, candidate names, gate verdicts, or operational evidence.
+Цей публічний контракт не відтворює внутрішні поля схем, поточні ID/хеші доказової бази, назви кандидатів, результати gate або операційну доказову базу.
 
-## 11. Related Guides
+## 11. Пов’язані матеріали
 
-- [Research / Backtesting](backtesting.md)
-- [Testing](../testing/testing_guide.md)
+- [Дослідження / бектестинг](backtesting.md)
+- [Тестування](../testing/testing_guide.md)

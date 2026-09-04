@@ -1,46 +1,46 @@
-# Méthodologie Research et Backtesting (FR)
+# Méthodologie de recherche et de backtesting (FR)
 
-## 1. Purpose
+## 1. Objectif
 
-Research and replay should produce reproducible, time-safe evidence without becoming a second uncontrolled trading implementation.
+La recherche et le replay doivent produire des preuves reproductibles et sûres sur le plan temporel, sans devenir une seconde implémentation de trading non contrôlée.
 
-## 2. Event-Time Semantics
+## 2. Sémantique du temps d’événement
 
-Decisions operate on explicitly defined event time. Data that was not available at decision time must not influence that decision.
+Les décisions reposent sur un event time explicitement défini. Les données qui n’étaient pas disponibles au moment de la décision ne doivent pas influencer cette décision.
 
-## 3. Deterministic Replay
+## 3. Replay déterministe
 
-The same inputs, contract versions, and deterministic configuration should produce reproducible replay outputs.
+Les mêmes entrées, versions de contrats et configuration déterministe doivent produire des résultats de replay reproductibles.
 
-## 4. No-Future-Leakage
+## 4. Absence de fuite d’informations futures
 
-Decision-time inputs are separated from later observation/outcome data. Future outcomes must not leak into earlier feature construction, ranking, or decisions.
+Les entrées disponibles au moment de la décision sont séparées des données d’observation ou de résultat ultérieures. Les résultats futurs ne doivent pas se retrouver dans la construction antérieure des features, le classement ou les décisions.
 
-## 5. Live / Replay Parity
+## 5. Parité live / replay
 
-Shared semantics should be reused where appropriate. Adapters may stay isolated, but replay must not silently bypass material live-domain execution, risk, or validation contracts.
+Les sémantiques communes doivent être réutilisées lorsque c’est pertinent. Les adaptateurs peuvent rester isolés, mais le replay ne doit pas contourner silencieusement des contrats importants d’exécution live, de risque ou de validation.
 
-## 6. Dataset Identity and Provenance
+## 6. Identité et provenance des jeux de données
 
-Source provenance, decision provenance, and outcome provenance are distinct concepts. Deterministic identities/content binding reduce accidental dataset or evidence mixing.
+La provenance de la source, de la décision et du résultat correspond à des concepts distincts. Des identités déterministes et une liaison au contenu réduisent les mélanges accidentels de jeux de données ou de preuves.
 
-## 7. Independent-Sample Semantics
+## 7. Sémantique des échantillons indépendants
 
-Rows, horizons, or repeated observations are not automatically independent samples. Independence must follow an explicit methodology appropriate to the evidence.
+Les lignes, horizons ou observations répétées ne constituent pas automatiquement des échantillons indépendants. L’indépendance doit découler d’une méthodologie explicite adaptée aux preuves considérées.
 
-## 8. Time-Safe Split Methodology
+## 8. Méthodologie de découpage respectant le temps
 
-Use explicit train/review/holdout boundaries. Apply purge/embargo where required to prevent boundary leakage. A one-shot holdout is not a tuning surface.
+Utilisez des frontières explicites train/review/holdout. Appliquez purge/embargo lorsque nécessaire pour éviter les fuites aux frontières. Un holdout utilisé une seule fois n’est pas une surface de tuning.
 
-## 9. Promotion Firewall
+## 9. Barrière de promotion
 
-Research evidence alone does not authorize rollout. Separate dataset-integrity, execution/domain-parity, and other required validation layers can block promotion.
+Les preuves issues de la recherche n’autorisent pas à elles seules un rollout. Des couches distinctes de validation de l’intégrité des jeux de données, de la parité execution/domain et d’autres exigences peuvent bloquer la promotion.
 
-## 10. Public-Safety Boundary
+## 10. Limite de publication sûre
 
-Do not publish current candidate names, current strategy results, private dataset hashes, current gate PASS/FAIL state, or operational rollout state.
+Ne publiez pas les noms actuels de candidats, les résultats actuels de stratégies, les hashes privés de jeux de données, l’état courant PASS/FAIL d’un gate ni l’état opérationnel du rollout.
 
-## 11. Related Guides
+## 11. Guides associés
 
-- [Evidence Contracts](evidence_contracts.md)
-- [Testing](../testing/testing_guide.md)
+- [Contrats de preuve](evidence_contracts.md)
+- [Tests](../testing/testing_guide.md)

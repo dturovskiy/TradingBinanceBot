@@ -1,41 +1,41 @@
-# Гайд з Тестування (UA)
+# Посібник із тестування (UA)
 
-## 1. Scope
+## 1. Обсяг
 
-Public documentation intentionally does not freeze an exact test count; collection size changes over time.
+Публічна документація навмисно не фіксує точну кількість тестів, оскільки розмір колекції з часом змінюється.
 
-## 2. Testing Taxonomy
+## 2. Таксономія тестування
 
-Current public-safe categories include:
+Поточні категорії, безпечні для публічної документації, охоплюють:
 
-- unit tests;
-- integration tests;
-- property-based tests / Hypothesis;
-- parametrized regression tests;
-- contract tests;
-- persistence / atomic-write tests;
-- order-state / recovery tests;
-- failure-path / network resilience tests;
-- replay / parity tests;
-- research / provenance tests;
-- observability tests;
-- risk / API / execution tests.
+- модульні тести;
+- інтеграційні тести;
+- property-based тести / Hypothesis;
+- параметризовані регресійні тести;
+- контрактні тести;
+- тести збереження стану / atomic write;
+- тести стану ордерів / відновлення;
+- тести failure paths / стійкості мережі;
+- тести replay / паритету;
+- тести досліджень / provenance;
+- тести спостережуваності;
+- тести ризику / API / виконання.
 
-## 3. Validation Pipeline Categories
+## 3. Категорії конвеєра валідації
 
-Where applicable, validation combines static/type checks, configuration/fail-safe checks, pytest, and benchmark/performance checks. Public docs do not claim a current enforced coverage percentage unless separately reverified.
+Де це доречно, валідація поєднує статичні перевірки й перевірки типів, перевірки конфігурації/fail-safe, pytest і перевірки benchmark/performance. Публічна документація не заявляє поточний обов’язковий відсоток coverage, якщо його окремо не перевірено повторно.
 
-## 4. Execution / Recovery Testing
+## 4. Тестування виконання / відновлення
 
-Validate durable-state persistence, restart reconciliation, idempotent recovery, fail-closed unresolved state, readiness gating, and the invariant that recovery does not submit fresh orders.
+Перевіряйте збереження стійкого стану, узгодження після перезапуску, ідемпотентне відновлення, fail-closed для невирішеного стану, gate готовності та інваріант, за яким відновлення не надсилає нових ордерів.
 
-## 5. Research / Replay Testing
+## 5. Тестування досліджень / replay
 
-Validate event-time semantics, no-future-leakage, deterministic replay, time-safe splits, dataset/provenance binding, independent-sample handling, and execution/domain parity.
+Перевіряйте семантику event time, відсутність витоку майбутніх даних, детермінований replay, часобезпечні розбиття, прив’язку набору даних і provenance, обробку незалежних вибірок і паритет execution/domain.
 
-## 6. Documentation Validation
+## 6. Валідація документації
 
-Run:
+Виконайте:
 
 ```bash
 python3 scripts/docs/check_language_parity.py
@@ -43,8 +43,8 @@ bash scripts/docs/validate_links.sh
 git diff --check
 ```
 
-When Bash execution is blocked by tool policy, run equivalent internal Markdown-link validation and record that limitation.
+Якщо виконання Bash заблоковане політикою інструментів, виконайте еквівалентну внутрішню валідацію Markdown-посилань і зафіксуйте це обмеження.
 
-## 7. Public-Safety Boundary
+## 7. Межа публічної безпеки
 
-Generated test/research evidence, private paths, current strategy/candidate results, and operational runtime artifacts are not published here.
+Згенерована тестова/дослідницька доказова база, приватні шляхи, поточні результати стратегій/кандидатів та операційні runtime-артефакти тут не публікуються.
