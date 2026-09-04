@@ -13,7 +13,7 @@ This map describes stable public-safe ownership domains, not the full private so
 | Trading orchestration | Iteration sequencing and trading-flow coordination |
 | Durable execution state / recovery | Persisted execution intent/state, restart reconciliation, readiness gating |
 | Exchange / API | External exchange reads and order-facing adapters |
-| Portfolio risk | Portfolio-level risk policy and containment |
+| Portfolio risk | Layered/grouped portfolio risk policy, reason/model separation, and fail-safe containment |
 | Monitoring / observability | Health, metrics, telemetry, reports |
 | Operator control | Notifications and operator-facing controls |
 | Persistence / config | Runtime persistence and configuration ownership |
@@ -29,6 +29,8 @@ This map describes stable public-safe ownership domains, not the full private so
 5. Exchange/API, risk, persistence, and observability remain separate ownership domains.
 
 This is ownership and safety ordering, not an exact startup implementation sequence.
+
+Risk ownership is layered: reason/model semantics remain distinct from grouped/portfolio-level coordination so risk concerns can be contained and fail safe without coupling the public contract to production thresholds or current exposure.
 
 ## 4. Durable Execution State / Recovery
 
