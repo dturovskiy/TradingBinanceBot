@@ -13,7 +13,7 @@ Cette carte décrit des domaines de responsabilité stables et adaptés à la do
 | Orchestration du trading | Séquencement des itérations et coordination du flux de trading |
 | État d’exécution durable / récupération | Intention et état d’exécution persistés, réconciliation après redémarrage et contrôle de disponibilité |
 | Exchange / API | Lecture de l’état externe de l’exchange et adaptateurs orientés ordres |
-| Risque de portefeuille | Politique et confinement du risque au niveau du portefeuille |
+| Risque de portefeuille | Politique de risque layered/grouped au niveau du portefeuille, séparation reason/model et confinement fail-safe |
 | Monitoring / observabilité | Santé, métriques, télémétrie et rapports |
 | Contrôle opérateur | Notifications et contrôles destinés à l’opérateur |
 | Persistance / configuration | Responsabilité de la persistance du runtime et de la configuration |
@@ -29,6 +29,8 @@ Cette carte décrit des domaines de responsabilité stables et adaptés à la do
 5. Exchange/API, risque, persistance et observabilité restent des domaines de responsabilité séparés.
 
 Il s’agit d’un ordre de responsabilité et de sécurité, et non d’une séquence exacte d’implémentation du démarrage.
+
+L’ownership du risque est layered : les sémantiques reason/model restent distinctes de la coordination grouped/portfolio-level afin que les préoccupations de risque puissent être confinées et fonctionner en fail-safe sans lier le contrat public aux seuils de production ni à l’exposition actuelle.
 
 ## 4. État d’exécution durable / récupération
 

@@ -32,9 +32,11 @@ Les lignes, horizons ou observations répétées ne constituent pas automatiquem
 
 Utilisez des frontières explicites train/review/holdout. Appliquez purge/embargo lorsque nécessaire pour éviter les fuites aux frontières. Un holdout utilisé une seule fois n’est pas une surface de tuning.
 
-## 9. Barrière de promotion
+## 9. Isolation du Scanner et Barrière de Promotion
 
-Les preuves issues de la recherche n’autorisent pas à elles seules un rollout. Des couches distinctes de validation de l’intégrité des jeux de données, de la parité execution/domain et d’autres exigences peuvent bloquer la promotion.
+L’exécution research/scanner est isolée de l’order placement. Le travail du scanner reste derrière une no-order boundary, est conceptuellement bounded et doit isoler les défaillances afin qu’un échec de recherche ne devienne pas une trading action.
+
+La sortie du scanner constitue une evidence/input, pas une promotion authorization. Les preuves issues de la recherche n’autorisent pas à elles seules un rollout ; des couches distinctes de validation de l’intégrité des jeux de données, de la parité execution/domain et d’autres exigences peuvent bloquer la promotion. Des preuves requises absentes, invalides ou insuffisantes échouent en fail-closed plutôt que de promouvoir silencieusement un résultat.
 
 ## 10. Limite de publication sûre
 

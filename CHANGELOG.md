@@ -20,6 +20,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Expanded testing taxonomy without freezing a test count or coverage percentage.
 - Strengthened public-sync provenance and public-safety governance.
 - Preserved EN/UA/FR path, hierarchy, factual, security-boundary, and link parity.
+- Expanded logging/observability guidance with structured telemetry, activation/profile, freshness/expected-idle, provenance, and non-mutating observation semantics.
+- Documented scanner isolation, the no-order boundary, bounded/failure-isolated research work, and fail-closed promotion evidence requirements.
+- Clarified layered/grouped portfolio-risk ownership and reason/model separation without publishing thresholds or current exposure.
 
 #### Security
 
