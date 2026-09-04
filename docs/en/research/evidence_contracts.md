@@ -32,6 +32,8 @@ Aggregation must respect independent-sample semantics. Duplicate or aliased evid
 
 Evidence that supports a statistical/market edge is not equivalent to evidence required for promotion. Promotion can require additional integrity, safety, execution, and domain validation.
 
+Scanner/research outputs are evidence inputs only. Their production is isolated from order placement, and bounded/failure-isolated research work does not carry rollout authority. Missing or invalid required scanner/evidence bindings block promotion fail-closed rather than being interpreted as permission to proceed.
+
 ## 9. Execution / Domain Parity
 
 Execution/domain parity is a separate validation layer intended to catch cases where replay or research bypasses material runtime semantics. It covers execution, timing, risk, and state semantics relevant to the target path; a favorable research result can still be blocked when this layer is missing or inconsistent.

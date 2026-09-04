@@ -32,6 +32,8 @@ L’agrégation doit respecter la sémantique des échantillons indépendants. L
 
 Les preuves qui étayent un avantage statistique ou de marché ne sont pas équivalentes aux preuves requises pour la promotion. La promotion peut exiger des validations supplémentaires d’intégrité, de sécurité, d’exécution et de domaine.
 
+Les sorties scanner/research ne sont que des evidence inputs. Leur production est isolée de l’order placement, et un research work bounded et failure-isolated ne porte aucune rollout authority. Des scanner/evidence bindings requis absents ou invalides bloquent la promotion en fail-closed plutôt que d’être interprétés comme une autorisation de poursuivre.
+
 ## 9. Parité d’exécution / de domaine
 
 La parité execution/domain constitue une couche de validation distincte destinée à détecter les cas où le replay ou la recherche contourne une sémantique importante du runtime. Elle couvre les sémantiques d’exécution, de temps, de risque et d’état pertinentes pour le chemin cible ; un résultat de recherche favorable peut toujours être bloqué si cette couche manque ou reste incohérente.

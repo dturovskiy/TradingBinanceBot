@@ -32,9 +32,11 @@ Rows, horizons, or repeated observations are not automatically independent sampl
 
 Use explicit train/review/holdout boundaries. Apply purge/embargo where required to prevent boundary leakage. A one-shot holdout is not a tuning surface.
 
-## 9. Promotion Firewall
+## 9. Scanner Isolation and Promotion Firewall
 
-Research evidence alone does not authorize rollout. Separate dataset-integrity, execution/domain-parity, and other required validation layers can block promotion.
+Research/scanner execution is isolated from order placement. Scanner work operates behind a no-order boundary, is conceptually bounded, and must isolate failures rather than allowing a research failure to become a trading action.
+
+Scanner output is evidence/input, not promotion authorization. Research evidence alone does not authorize rollout; separate dataset-integrity, execution/domain-parity, and other required validation layers can block promotion. Missing, invalid, or insufficient required evidence fails closed rather than silently promoting a result.
 
 ## 10. Public-Safety Boundary
 
