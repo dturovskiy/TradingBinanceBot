@@ -1,20 +1,20 @@
 # Glossary
 
-- `TradingBinanceBot`: public documentation repository.
-- `TradingExecutor`: orchestrator of per-iteration buy/sell/risk flow.
-- `RiskManager`: portfolio risk-policy evaluator with modes such as `off`, `shadow`, and `enforce`.
-- `Feature Flag`: runtime rollout switch in configuration.
-- `Circuit Breaker`: guard that blocks a symbol after repeated failures.
-- `Illiquid Position`: symbol temporarily blocked from trading.
-- `Dry-run`: simulation mode without real order placement.
-- `Testnet`: Binance testing environment.
-- `Mainnet`: live Binance environment with real funds.
-- `Archive Root`: local directory containing normalized historical OHLCV files and summary metadata.
-- `Data-Ingestion Layer`: companion workflow that fetches and stores historical market data.
-- `Same-Core Replay`: research/backtesting execution that reuses the trading core instead of maintaining a second strategy implementation.
-- `Research Layer`: offline tools that run replay, ranking, sweeps, and proof workflows.
-- `Baseline`: reference result used for comparison.
-- `Candidate`: proposed strategy/configuration revision evaluated against a baseline.
-- `Promotion Gate`: evidence checkpoint before moving a candidate toward testnet, shadow, or live rollout.
-- `Generated Offline Output`: non-runtime artifact stored under `data/out/<domain>/`.
-- `Artifact Ownership`: rule describing the canonical home of a document, log, state file, or generated report.
+- `TradingBinanceBot`: public documentation-only repository.
+- `Durable State`: locally persisted execution state intended to survive process restart.
+- `Reconciliation`: comparison and resolution of externally observed exchange state with locally managed state.
+- `Restart Recovery`: deterministic process for resolving durable execution state before normal readiness.
+- `Idempotency`: property that allows a recovery or state-application step to be repeated without duplicating its effect.
+- `Readiness Gate`: condition that must be satisfied before normal trading activity resumes.
+- `Fail Closed`: block progression when required state or evidence remains unresolved.
+- `Event Time`: explicitly defined time associated with an observation/decision in replay or research.
+- `Deterministic Replay`: reproducible replay for the same inputs and contract versions.
+- `No-Future-Leakage`: rule preventing future observations/outcomes from influencing past decisions.
+- `Dataset Identity`: deterministic identity binding a dataset to its intended contents/provenance.
+- `Provenance`: metadata describing the origin and role of data or evidence.
+- `Content-Bound Evidence`: evidence whose identity is deterministically tied to its contents.
+- `Independent Sample`: an observation counted as statistically independent under an explicit methodology rather than merely because it occupies a separate row.
+- `Purge / Embargo`: time-safety techniques used to reduce leakage across train/review/holdout boundaries.
+- `One-Shot Holdout`: holdout semantics intended to prevent repeated tuning against the final evaluation set.
+- `Promotion Firewall`: separation between research evidence and authorization to advance toward deployment.
+- `Execution/Domain Parity`: validation that replay/research does not silently bypass material execution-domain contracts.

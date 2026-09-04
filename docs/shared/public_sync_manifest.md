@@ -1,37 +1,26 @@
 # Public Sync Manifest
 
-## Current Public-Safe Snapshot
+## Prepared Public-Safe Snapshot
 
-- Public documentation sync date: `2026-05-30`
-- Private implementation: maintained in a separate non-public repository
-- Public-safe source review date: `2026-05-26`
+- Documentation review date: `2026-09-04`
+- Reviewed private source commit: `05a4214895111bcdbb7960223b4af232c066c48c`
+- Private source commit date: `2026-09-03`
+- Previous public sync: `2026-05-30`
+- Previous exact private source SHA: `not recorded`
+- Current public sync status: `prepared for review; not yet merged`
 
-## Curated Source Contracts
+## Source Binding Rule
 
-This public-safe sync was derived from stable contracts represented by:
+This and future documentation syncs are commit-bound rather than date-only. The reviewed private Git commit identifies the source snapshot used for factual review.
 
-- root runtime overview;
-- current project map;
-- configuration ownership contract;
-- runtime behavior contract;
-- artifact ownership matrix;
-- data archive and backtesting research guide;
-- launcher/process-control behavior affecting detached starts.
+## Curated Contract Families
+
+This prepared sync covers stable public-safe contracts for architecture ownership, durable execution/recovery, research/backtesting methodology, evidence/provenance methodology, testing taxonomy, and documentation governance.
 
 ## Publication Boundary
 
-This repository is not a mirror of the private implementation. The sync exports
-operator-facing contracts and architecture guidance only.
+This repository is not a source-code mirror. It intentionally excludes implementation source, credentials, production state/logs, current strategies/candidates/rankings, exact production thresholds, infrastructure topology, exact recovery commands, and private operational evidence.
 
-The sync intentionally excludes:
+## Historical Note
 
-- private runtime source;
-- credentials and environment values;
-- production state and logs;
-- workstation-specific paths;
-- unpublished strategy candidates, rankings, and internal rollout evidence.
-
-## Review Rule
-
-When the private implementation changes after the public-safe review date above, review
-`docs/shared/docs_sync_policy.md` and run another public-safe sync pass.
+The previous public sync was recorded on `2026-05-30`. Its exact private source SHA was not recorded and is not reconstructed or guessed here.

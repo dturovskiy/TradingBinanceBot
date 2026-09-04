@@ -1,12 +1,14 @@
 # Public Documentation Release Checklist
 
-## Before Applying a Sync
+## Before Commit
 
-- Work on a clean branch in `TradingBinanceBot`.
-- Review the patch manifest and source implementation snapshot.
-- Confirm the patch contains documentation and docs-validation files only.
+- Work on a non-`main` branch.
+- Confirm the expected changed-path manifest.
+- Confirm new files are staged.
+- Record the exact reviewed private source commit.
+- Confirm no delete/rename occurred unless explicitly approved.
 
-## After Applying a Sync
+## Validation
 
 Run:
 
@@ -14,26 +16,35 @@ Run:
 python3 scripts/docs/check_language_parity.py
 bash scripts/docs/validate_links.sh
 git diff --check
-git status --short
-git diff --stat
+git diff --cached --stat
 ```
+
+If Bash execution is blocked by the tool policy, run an equivalent internal Markdown-link existence check and record that limitation.
 
 ## Public-Safety Review
 
-Confirm that the diff contains no:
+Confirm the staged patch contains no:
 
-- API keys, secrets, tokens, or chat identifiers;
-- production balances, positions, trades, or logs;
-- absolute workstation paths;
-- generated data archives;
-- private source-code files;
-- unpublished strategy-specific ranking or rollout artifacts.
+- credentials, secrets, tokens, or chat identifiers;
+- balances, positions, trade-ledger contents, or runtime logs;
+- hostnames or PIDs;
+- absolute machine paths;
+- mount/storage or DNS/network topology;
+- current strategy/candidate names, rankings, or active research status;
+- exact production limits or thresholds;
+- exact operational recovery commands or incident procedures;
+- private implementation source when contract-level prose is sufficient;
+- private evidence identifiers/hashes unnecessary for documentation provenance.
 
-## Commit
+The reviewed private Git commit SHA recorded in the sync manifest is an approved provenance identifier.
 
-After review:
+## Language and Navigation Review
 
-```bash
-git add README.md CHANGELOG.md docs scripts/docs/check_language_parity.py
-git commit -m "docs: sync public documentation with current architecture and research contracts"
-```
+- EN, UA, and FR expose the same required paths.
+- Corresponding pages preserve the same section hierarchy and factual claims.
+- Corresponding pages keep the same security boundary and navigation targets.
+- `README.md` and `docs/index.md` link to all current public topic families.
+
+## Commit Gate
+
+Do not commit until validation, diff review, and public-safety review pass.
